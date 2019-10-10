@@ -12,7 +12,7 @@ set nfylib "/opt/serpent/xsdata/sss_endfb7.nfy"
 
 
 % --- Materials --- %
-include "First_Material"
+include "First_Materials"
 
 
 
@@ -42,10 +42,32 @@ cell c1 0 fuel          -Pin1
 cell c2 0 water    Pin1 -Outer
 cell c3 0 outside  Outer
 
+
+% -------------------------- %
+% --- Add Run Parameters --- %
+% -------------------------- %
+
+set pop 5000 100 20
+
+% --- Boundry Condition: (2 is reflective) ---%
+set bc 2
+
+
+
+
+
+
+
+
+
 % ------------- %
 % --- Plots --- %
 % ------------- %
 
 plot 3 500 500
+
+
+
+
 
 
