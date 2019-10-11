@@ -50,11 +50,8 @@ cell c3 0 outside  Outer
 set pop 5000 100 20
 
 % --- Boundry Condition: (2 is reflective) ---%
+
 set bc 2
-
-
-
-
 
 
 
