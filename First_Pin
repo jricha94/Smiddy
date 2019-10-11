@@ -60,7 +60,19 @@ set bc 2
 plot 3 500 500
 
 
+% -------------------------- %
+% --- Make the Detectors --- %
+% -------------------------- %
 
 
+% --- First define energy group --- %
+
+ene groupE 1 1E-11 6.25E-7 0.05 20
+
+% --- Define Detector --- %
+
+det fluxplot de groupE dv 0.01
+dx -10.0 10.0 200
+dy -10.0 10.0 200
 
 
