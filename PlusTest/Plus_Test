@@ -1,0 +1,77 @@
+%--- Main scrpit for multiple fuel pin shapes to model different aspects of them ---%
+  
+
+% --- set xs library locations --- %
+set acelib "/opt/serpent/xsdata/sss_endfb7u.xsdata"
+set declib "/opt/serpent/xsdata/sss_endfb7.dec"
+set nfylib "/opt/serpent/xsdata/sss_endfb7.nfy"
+
+% -------------------------------- %
+% --- Link other files to file --- %
+% -------------------------------- %
+
+
+% --- Materials --- %
+include "First_Materials"
+
+
+
+
+% --------------------------------------- %
+% --- Define different shapes of pins --- %
+% --------------------------------------- %
+
+
+% --- Cylinder centered at Origin with 5cm --- %
+
+surf Pin1 cross 0.0 0.0 5.0 1.0
+
+% --- Square centered at Origin with Radius of 10cm --- %
+
+surf Outer sqc 0.0 0.0 10.0
+
+
+% -------------------- %
+% --- Create cells --- %
+% -------------------- %
+
+
+
+
+cell c1 0 fuel          -Pin1
+cell c2 0 water    Pin1 -Outer
+cell c3 0 outside  Outer
+
+
+% -------------------------- %
+% --- Add Run Parameters --- %
+% -------------------------- %
+
+set pop 5000 100 20
+
+% --- Boundry Condition: (2 is reflective) ---%
+
+set bc 2
+
+% ------------- %
+% --- Plots --- %
+% ------------- %
+
+plot 3 500 500
+
+
+% -------------------------- %
+% --- Make the Detectors --- %
+% -------------------------- %
+
+
+% --- First define energy group --- %
+
+ene groupE 1 1E-11 6.25E-7 0.05 20
+
+% --- Define Detector --- %
+
+det fluxplot de groupE dv 0.01
+dx -10.0 10.0 200
+dy -10.0 10.0 200
+
