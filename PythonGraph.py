@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 #Read and Plot flux
 #Jarod Richardson, jricha94@vols.utk.edu
@@ -11,8 +11,8 @@ import serpentTools
 
 # read in data
 
-godivafile = serpentTools.read("First_Pin_det0.m")
-fluxplot = godivafile['fluxplot']
+Pinfile = serpentTools.read("First_Pin_det0.m")
+fluxplot = Pinfile['fluxplot']
 
 #fill simple arrays for plotting
 #copy script from github becuase Im still learning
@@ -33,3 +33,18 @@ fastfluxe  *= fastflux     # relative to absolute error
 if verbose:
     print("XY: ", xy)
     print("FastFlux: ", fastflux)
+    
+    
+    
+#sclae for nicer plots
+scale = 1e3
+thrmflux    *= scale
+thrmfluxe   *= scale
+epitflux    *= scale
+epitfluxe   *= scale
+fastflux    *= scale
+fastfluxe   *= scale
+
+
+# make plots
+FastPlot = pyplot.plot_surface('x', 'y', fixed = {'energy':2})
