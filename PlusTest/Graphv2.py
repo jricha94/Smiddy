@@ -6,7 +6,7 @@ import serpentTools
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
-pinfile = 'First_Pin_det0.m'
+pinfile = 'Plus_Test_det0.m'
 pin = serpentTools.readDataFile(pinfile)
 
 det = pin['fluxplot']
