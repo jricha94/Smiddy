@@ -44,46 +44,53 @@ class serpDeck(object):
         self.gr_dens:float = 1.80                           # Graphite density at 950 K [g/cm3]
 
         self.histories:int = 5000                           # Neutron histories per cycle
-
-        self.GraphiteCTE:float = 3.5e-6                     # Graphite linear expansion coefficient [m/m per K]
+        self.graphiteCTE:float = 3.5e-6                     # Graphite linear expansion coefficient [m/m per K]
 
         # From https://thorconpower.com/docs/exec_summary2.pdf
         # Look at page 57 for references to dark and light moderator, and nubs
 
         # Light Mod values
         self.lightPoints = {#points for light moderator
-            #point: (x,y) [cm]
-            '1' : [0.0, 0.0,],
-            '2' : [0.0, -4.8], 
-            '3' : [.38, -4.8],
-            '4' : [.38, -5.39],
-            '5' : [0.0,-5.39],
-            '6' : [0.0, -14.77996],
-            '7' : [.38, -14.7996],
-            '8' : [.38, -15.3896],
-            '9' : [0.0, -15.3896],
-            '10': [0.0, -19.7896],
-            '11': [-3.394, -17.8301],
-            '12': [-3.394, -17.9136],
-            '13': [-3.984, -17.9136],
-            '14': [-3.984, 1.876], 
-            '15': [-.59, -0.0835],
-            '16': [-.59, 0.0]
-        }
+                #point: (x,y) [cm]
+                '1' : [0.0, 0.0,],
+                '2' : [0.0, -4.8], 
+                '3' : [.38, -4.8],
+                '4' : [.38, -5.39],
+                '5' : [0.0,-5.39],
+                '6' : [0.0, -14.77996],
+                '7' : [.38, -14.7996],
+                '8' : [.38, -15.3896],
+                '9' : [0.0, -15.3896],
+                '10': [0.0, -19.7896],
+                '11': [-3.394, -17.8301],
+                '12': [-3.394, -17.9136],
+                '13': [-3.984, -17.9136],
+                '14': [-3.984, 1.876], 
+                '15': [-.59, -0.0835],
+                '16': [-.59, 0.0]
+                }
         # Dark Mod Values
         self.darkPoints = {#Points for dark moderator
-            #point: (x,y) [cm]
-            '1' : [0.0, 0.0],
-            '2' : [1.5915, -.7688],
-            '3' : [1.5915, -20.9964],
-            '4' : [0.3649, -21.6863],
-            '5' : [-1.5856, -20.7896],
-            '6' : [-1.5856, -0.7808]
-        }
+                #point: (x,y) [cm]
+                '1' : [0.0, 0.0],
+                '2' : [1.5915, -.7688],
+                '3' : [1.5915, -20.9964],
+                '4' : [0.3649, -21.6863],
+                '5' : [-1.5856, -20.7896],
+                '6' : [-1.5856, -0.7808]
+                }
         #Control rod Values
 
         #Misc core values
         self.potRadius = 243.048                            #cm - Radius of the pot
+
+        #Points for testing
+        self.square = {
+                '1':[0.0, 0.0],
+                '2':[0.0, 1.0],
+                '3':[1.0, 0.0],
+                '4':[1.0, 1.0]
+                }
 
     def makePlane(self, point1:list, point2:list, planeName:str) -> str:
         '''Makes serpent input for a verticle plane using 2 points
@@ -164,7 +171,12 @@ surf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
         return darkPlanes, darkCell
 
     def makeCell(self,points:dict = None, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = ''):
-        pass
+        numOfPoints = len(dict)
+        
+        planeStr = f'%Planes for cell {cellName}'
+
+        for point in range(numOfPoints-1):
+            planeStr += self.makePlane()
 
 
 

@@ -1,0 +1,22 @@
+%different colorerd mats for plotting
+
+mat blue -10 rbg 0 100 0
+1001.03c     2.0
+8016.03c     1.0
+
+mat red -10 rbg 100 0 0
+1001.03c     2.0
+8016.03c     1.0
+
+mat green -10 rbg 0 0 100
+1001.03c     2.0
+8016.03c     1.0
+
+
+surf s1 0.0 0.0 1.5
+
+cell c1 0 blue -s1
+cell c2 0 outside s1
+
+%plots
+plot 3 500 500
