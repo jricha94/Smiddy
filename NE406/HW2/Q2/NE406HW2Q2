@@ -1,0 +1,19 @@
+c NE406 Homework 2 Question 1
+c Jarod Richardson
+c
+c
+c --------Cells Cards
+ 1     1     -11.35    -1             imp:p=1    $Pb
+ 2     0                1    -2       imp:p=1    $Naked Area
+ 3     0                2             imp:p=0 
+
+c --------Surface Cards
+ 1     so     0.14                               $Al sphere
+ 2     so     1.0                                $void
+
+c --------Data Cards
+m1     82207     1                               $Lead
+sdef   erg=0.7   par=p   
+nps    500000
+f1:p   2
+mode p
