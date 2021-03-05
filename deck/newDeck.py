@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import copy
 from salts import Salt
 import serpentTools as st
 
@@ -20,6 +21,45 @@ absorbers = {
 }
 
 do_plots = False
+graphiteCTE:float = 3.5e-6                     # Graphite linear expansion coefficient [m/m per K]
+
+
+
+def makePlane(point1:list, point2:list, planeName:str) -> str:
+    '''Makes serpent input for a verticle plane using 2 points
+    Inputs:
+         2 points to define the plane
+    Outputs:
+        Serpent input for cell surface'''
+    x1, y1, z1 = point1[0], point1[1], 0.0
+    x2, y2, z2 = point2[0], point2[1], 0.0
+    x3, y3, z3 = point2[0], point2[1], -1.0
+    planeInput= f'''\nsurf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
+    return planeInput
+
+def graphiteLinearExpansion(point:list = None, tempK:float = 293.0) -> list:
+    x0, y0 = point[0], point[1]
+    xf = x0 * (1.0 + graphiteCTE * (tempK - 293.0))
+    yf = y0 * (1.0 + graphiteCTE * (tempK - 293.0))
+    return [xf, yf]
+
+def rotateAndTranslate(point:list, rotation:float, deltaX:float, deltaY:float):
+    '''rotates a 2D point around 0,0 and then translates it
+    Inputs:
+        point: Point to be moved
+        rotation: Amount in degrees of counter clockwise rotation
+        deltaX: Translation in the X direction
+        deltaY: Translation in the Y direction
+    Outputs:
+        new list of updated X and Y'''
+    #Apply rotation first
+    x, y = point[0], point[1]
+    xRot = x * np.cos(np.radians(rotation)) - y * np.sin(np.radians(rotation))
+    yRot = x * np.sin(np.radians(rotation)) + y * np.cos(np.radians(rotation))
+    #Apply translation
+    xTran = xRot + deltaX
+    yTran = yRot + deltaY
+    return [xTran, yTran]
 
 
 class serpDeck(object):
@@ -40,7 +80,7 @@ class serpDeck(object):
         self.rodPosition:list = [0, 0 , 0 , 0 , 0 ,0]       # Position of the control rods
         self.fs_tempK:float = 900.0                         # Salt temperature for density
         self.mat_tempK:float = 900.0                        # Salt temperature for material temp
-        self.gr_tempK:float = 950.0                         # Graphite temperature
+        self.gr_tempK:float = 293.0                         # Graphite temperature
         self.gr_dens:float = 1.80                           # Graphite density at 950 K [g/cm3]
 
         self.histories:int = 5000                           # Neutron histories per cycle
@@ -84,48 +124,10 @@ class serpDeck(object):
         #Misc core values
         self.potRadius = 243.048                            #cm - Radius of the pot
 
-        #Points for testing
-        self.square = {
-                '1':[0.0, 0.0],
-                '2':[0.0, 1.0],
-                '3':[1.0, 0.0],
-                '4':[1.0, 1.0]
-                }
-
-    def makePlane(self, point1:list, point2:list, planeName:str) -> str:
-        '''Makes serpent input for a verticle plane using 2 points
-        Inputs:
-             2 points to define the plane
-        Outputs:
-            Serpent input for cell surface'''
-        x1, y1, z1 = point1[0], point1[1], 0.0
-        x2, y2, z2 = point2[0], point2[1], 0.0
-        x3, y3, z3 = point2[0], point2[1], -1.0
-        planeInput= f'''
-surf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
-
-        return planeInput
 
     
-    def rotateAndTranslate(self, point:list, rotation:float, deltaX:float, deltaY:float):
-        '''rotates a 2D point around 0,0 and then translates it
-        Inputs:
-            point: Point to be moved
-            rotation: Amount in degrees of counter clockwise rotation
-            deltaX: Translation in the X direction
-            deltaY: Translation in the Y direction
-        Outputs:
-            new list of updated X and Y'''
-        #Apply rotation first
-        x, y = point[0], point[1]
-        xRot = x * np.cos(np.radians(rotation)) - y * np.sin(np.radians(rotation))
-        yRot = x * np.sin(np.radians(rotation)) + y * np.cos(np.radians(rotation))
-        #Apply translation
-        xTran = xRot + deltaX
-        yTran = yRot + deltaY
-        return [xTran, yTran]
-    
-    def makeDarkModCells(self, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = '999') -> str:
+    def makeDarkMod(self, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = '999', cellUni:str = '0', cellMat:str = 'graphite') -> str:
+        #TODO add top and bottom planes, add uni and mat to cell
         '''Creates dark moderator cell; rotation applied first, then translation
          Inputs:
             rotation: amount in degrees of counter clockwise rotation
@@ -135,19 +137,22 @@ surf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
          Outputs:
             darkPlanes: Serpent input for planes making up cell of dark moderator
             darkCell: Serpent input for dark moderator cell'''
-        ###########Add thermal expansion here###################
+        #TODO: Clean up way code moves through points
 
-        localDarkPoints = self.darkPoints                               #Copy points to this module so we dont have to overwrite them
+        localDarkPoints = copy.copy(self.darkPoints)                               #Copy points to this module so we dont have to overwrite them
+
+        for point in localDarkPoints:
+            localDarkPoints[point] = graphiteLinearExpansion(localDarkPoints[point], self.gr_tempK)
         
         if rotation == 0.0 and deltaX == 0.0 and deltaY == 0.0:         #Move points to desired location if change is applied
             pass
         else:
             for point in localDarkPoints:
-                localDarkPoints[point] = self.rotateAndTranslate(localDarkPoints[point], rotation, deltaX, deltaY)
+                localDarkPoints[point] = rotateAndTranslate(localDarkPoints[point], rotation, deltaX, deltaY)
 
         planeNameList = []                                              #Create empty list to store plane names
 
-        darkPlanes = f'%Planes for cell {cellName}'                     #Create string for plane names
+        darkPlanes = f'\n%Planes for cell {cellName}'                     #Create string for plane names
 
 
         for point in localDarkPoints:                                   #Make planes for all but plane consisting of first and last point
@@ -157,34 +162,109 @@ surf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
             else:
                 planeName = cellName + point
                 planeNameList.append(planeName)
-                darkPlanes += self.makePlane(localDarkPoints[point],localDarkPoints[str(int(point)+1)], planeName)
+                darkPlanes += makePlane(localDarkPoints[point],localDarkPoints[str(int(point)+1)], planeName)
         
         planeName = cellName + '6'                                      #Make last plane
         planeNameList.append(planeName)
-        darkPlanes += self.makePlane(localDarkPoints['6'], localDarkPoints['1'], planeName)
+        darkPlanes += makePlane(localDarkPoints['6'], localDarkPoints['1'], planeName)
 
         #Create cell
-        darkCell = f'cell {cellName} 1 graphite'                                                   #Create string for dark cell
+        darkCell = f'\ncell {cellName} {cellUni} {cellMat} '                                                   #Create string for dark cell
         for plane in planeNameList:
             darkCell += f' -{plane}'
 
         return darkPlanes, darkCell
 
-    def makeCell(self,points:dict = None, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = ''):
-        numOfPoints = len(dict)
-        
-        planeStr = f'%Planes for cell {cellName}'
+    def makeLightMod(self, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = '999', cellUni:str = '0', cellMat:str = 'graphite') -> str:
+        '''
+        TODO add description
+        '''
+        localLightPoints = copy.copy(self.lightPoints)
 
-        for point in range(numOfPoints-1):
-            planeStr += self.makePlane()
+        for point in localLightPoints:
+            localLightPoints[point] = graphiteLinearExpansion(localLightPoints[point], self.gr_tempK)
+
+        if rotation == 0.0 and deltaX == 0.0 and deltaY == 0.0:         #Move points to desired location if change is applied
+            pass
+        else:
+            for point in localLightPoints:
+                localLightPoints[point] = rotateAndTranslate(localLightPoints[point], rotation, deltaX, deltaY)
+        
+        planeNameList = []
+
+        lightPlanes = f'\n%Planes for cell {cellName}'
+
+        for point in range(len(localLightPoints)-1):
+            if point == 4 or point == 8:
+                planeName = cellName + str(point+1)
+                planeNameList.append(planeName)
+            else:
+                planeName = cellName + str(point+1)
+                planeNameList.append(planeName)
+                lightPlanes += makePlane(localLightPoints[str(point+1)], localLightPoints[str(point+2)], planeName)
+
+        planeName = cellName + str(len(localLightPoints))
+        planeNameList.append(planeName)
+        lightPlanes += makePlane(localLightPoints[str(len(localLightPoints))], localLightPoints['1'], planeName)
+
+        #Create cells
+        lightCell = f'\ncell {cellName} {cellUni} {cellMat} '
+        lightCell += f'-{planeNameList[0]} -{planeNameList[9]} -{planeNameList[12]} -{planeNameList[13]}'   #Main Shape
+        lightCell += f':-{planeNameList[0]} -{planeNameList[14]} -{planeNameList[15]} {planeNameList[13]}'  #Nub 1
+        lightCell += f':{planeNameList[0]} -{planeNameList[1]} -{planeNameList[2]} -{planeNameList[3]}'     #Nub 2
+        lightCell += f':{planeNameList[0]} -{planeNameList[5]} -{planeNameList[6]} -{planeNameList[7]}'     #Nub 3
+        lightCell += f':{planeNameList[9]} -{planeNameList[10]} -{planeNameList[11]} -{planeNameList[12]}'  #Nub 4
+
+        return lightPlanes, lightCell
+
+    def makeSurfsAndCells(self):
+        cellList = [#List of dark and light moderators, d=dark, l=light
+        #type rotation   dX        dY        name
+        ['d', 0.0,      0.0,     -0.2656,   'd1'],
+        ['d',-120.0,    -0.23,   0.1328,     'd2'],
+        ['l', 0.0,     -2.0,  -0.69871,  'l1'],
+        ['l', 0.0,     -6.4,   1.8539,   'l2'],
+        ['l', 0.0,     -10.8,  4.3595,   'l3'],
+        ['l', 0.0,     -15.2,  6.9069,   'l4']
+        ]
+
+        surfs = '%____________________Surfaces____________________'
+        cells = '%_____________________Cells______________________'
+
+        for cell in cellList:
+            if cell[0] == 'd':
+                plane, cell = self.makeDarkMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='1')
+                surfs += plane
+                cells += cell
+            elif cell[0] == 'l':
+                plane, cell = self.makeLightMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='1')
+                surfs += plane
+                cells += cell
+        
+        return surfs, cells
+
+
 
 
 
 if __name__ == '__main__':
     test = serpDeck()
-    a, b = test.makeDarkModCells()[0], test.makeDarkModCells()[1]
+    #print(test.lightPoints)
+    #a,b = test.makeSurfsAndCells()
+    #print()
+    #print()
+    #print(test.lightPoints)
+    #print(a)
+    #print()
+    #print(b)
+    test.gr_tempK = 0.0
+    a,b = test.makeLightMod(deltaX = -5.0, deltaY=7.0, cellUni='1', cellName='c')
+    test.gr_tempK = 100000.0
+    c,d = test.makeLightMod(deltaX = 7.0, deltaY=12.0, cellUni='1', cellName='h')
     print(a)
+    print(c)
     print(b)
+    print(d)
 
        
  
