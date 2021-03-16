@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from textwrap import dedent
 import numpy as np
 import copy
 from salts import Salt
@@ -21,7 +22,8 @@ absorbers = {
 }
 
 do_plots = False
-graphiteCTE:float = 3.5e-6                     # Graphite linear expansion coefficient [m/m per K]
+GRAPHITE_CTE:float = 3.5e-6                    # Graphite linear expansion coefficient [m/m per K]
+GRAPHITE_RHO:float = 1.80                      # Graphite density at 950 K [g/cm3]
 
 
 
@@ -37,11 +39,22 @@ def makePlane(point1:list, point2:list, planeName:str) -> str:
     planeInput= f'''\nsurf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
     return planeInput
 
-def graphiteLinearExpansion(point:list = None, tempK:float = 293.0) -> list:
-    x0, y0 = point[0], point[1]
-    xf = x0 * (1.0 + graphiteCTE * (tempK - 293.0))
-    yf = y0 * (1.0 + graphiteCTE * (tempK - 293.0))
-    return [xf, yf]
+def graphiteLinearExpansion(point = None, tempK:float = 293.0) -> list:
+    if type(point) is list: 
+        x0, y0 = point[0], point[1]
+        xf = x0 * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
+        yf = y0 * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
+        result = [xf, yf]
+    else:
+        pf = point * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
+        result = pf
+    return result
+
+def graphiteDensityExpansion(tempK:float=950.0) -> float:
+    'Return new density based on graphite thermal expansion'
+    unit_f  = (1.0 + GRAPHITE_CTE * (tempK - 950.0))
+    rho_f   = GRAPHITE_RHO / unit_f**3
+    return rho_f
 
 def rotateAndTranslate(point:list, rotation:float, deltaX:float, deltaY:float):
     '''rotates a 2D point around 0,0 and then translates it
@@ -75,16 +88,21 @@ class serpDeck(object):
     outputName:str = 'output',                              # Output file name
     e:float = 0.02,                                         # Enrichment of Uranium in fuel
     refuel_e:float = 0.04,                                  # Enrichment of Uranium in fuel used for refueling
+    grTempk:float = 293.0,                                  # Graphite temperature [k]  
     ):  
 
         self.rodPosition:list = [0, 0 , 0 , 0 , 0 ,0]       # Position of the control rods
         self.fs_tempK:float = 900.0                         # Salt temperature for density
         self.mat_tempK:float = 900.0                        # Salt temperature for material temp
-        self.gr_tempK:float = 293.0                         # Graphite temperature
+        self.gr_tempK:float = grTempk                       # Graphite temperature
         self.gr_dens:float = 1.80                           # Graphite density at 950 K [g/cm3]
 
         self.histories:int = 5000                           # Neutron histories per cycle
-        self.graphiteCTE:float = 3.5e-6                     # Graphite linear expansion coefficient [m/m per K]
+
+        self.inputName = inputName
+        self.e = e
+        self.fuel = fuel
+        self.salt_formula = fuelsalts[self.fuel]
 
         # From https://thorconpower.com/docs/exec_summary2.pdf
         # Look at page 57 for references to dark and light moderator, and nubs
@@ -100,7 +118,7 @@ class serpDeck(object):
                 '6' : [0.0, -14.77996],
                 '7' : [.38, -14.7996],
                 '8' : [.38, -15.3896],
-                '9' : [0.0, -15.3896],
+                '9' : [0.0, -15.3896], 
                 '10': [0.0, -19.7896],
                 '11': [-3.394, -17.8301],
                 '12': [-3.394, -17.9136],
@@ -121,8 +139,19 @@ class serpDeck(object):
                 }
         #Control rod Values
 
-        #Misc core values
-        self.potRadius = 243.048                            #cm - Radius of the pot
+        #Core values
+        self.potRadius:float = 243.048                      # cm - Radius of the pot
+        self.shieldThickness:float = 10.0                   # cm - Thicness of shield
+        self.latticePitch:float = 19.0552                   # cm - Pitch of the main lattice
+
+        #Make fuelsalt
+        
+        self.salt = Salt(f=self.salt_formula, e=self.e)
+
+        #Material Values
+        self.lib:str = '09c'                                # Cross section library for salt
+        self.grLib:str = '09c'                              # Cross section library for graphite
+        self.boronGraphite:float = 2e-6                     # 2ppm boron in graphite
 
 
     
@@ -217,54 +246,160 @@ class serpDeck(object):
 
         return lightPlanes, lightCell
 
-    def makeSurfsAndCells(self):
+    def makeLog(self) -> str:
         cellList = [#List of dark and light moderators, d=dark, l=light
-        #type rotation   dX        dY        name
-        ['d', 0.0,      0.0,     -0.2656,   'd1'],
-        ['d',-120.0,    -0.23,   0.1328,     'd2'],
-        ['l', 0.0,     -2.0,  -0.69871,  'l1'],
-        ['l', 0.0,     -6.4,   1.8539,   'l2'],
-        ['l', 0.0,     -10.8,  4.3595,   'l3'],
-        ['l', 0.0,     -15.2,  6.9069,   'l4']
+        #type rotation               dX                                                    dY                                      name
+        ['d', 0.0,      graphiteLinearExpansion(0.0, self.gr_tempK),       graphiteLinearExpansion(-0.2656, self.gr_tempK),        'd1'],
+        ['d',-120.0,    graphiteLinearExpansion(-0.23, self.gr_tempK),     graphiteLinearExpansion(0.1328, self.gr_tempK),         'd2'],
+        ['l', 0.0,      graphiteLinearExpansion(-2.0, self.gr_tempK),      graphiteLinearExpansion(-0.69871, self.gr_tempK),       'l1'],
+        ['l', 0.0,      graphiteLinearExpansion(-6.4, self.gr_tempK),      graphiteLinearExpansion(1.8539, self.gr_tempK),         'l2'],
+        ['l', 0.0,      graphiteLinearExpansion(-10.8, self.gr_tempK),     graphiteLinearExpansion(4.3595, self.gr_tempK),         'l3'],
+        ['l', 0.0,      graphiteLinearExpansion(-15.2, self.gr_tempK),     graphiteLinearExpansion(6.9069, self.gr_tempK),         'l4']
         ]
 
-        surfs = '%____________________Surfaces____________________'
-        cells = '%_____________________Cells______________________'
+        surfs =     '\n\n%____________________Surfaces____________________'
+        cells =     '\n\n%____________________Cells_______________________'
+        saltCell =  '\n\ncell salt 2 fuelsalt\n'
+        log   =     '\n\n%____________________Log Tweaks__________________'
 
         for cell in cellList:
             if cell[0] == 'd':
-                plane, cell = self.makeDarkMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='1')
+                plane, cell = self.makeDarkMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='2')
                 surfs += plane
                 cells += cell
+                saltCell += f'#({cell[21:]})\n'
             elif cell[0] == 'l':
-                plane, cell = self.makeLightMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='1')
+                plane, cell = self.makeLightMod(rotation=cell[1], deltaX=cell[2], deltaY=cell[3], cellName=cell[4], cellUni='2')
                 surfs += plane
                 cells += cell
+                saltCell += f'#({cell[20:]})\n'
         
+        log += '\nset usym 2   3   3  0  0 150 120\n'
+
+        
+        return surfs, cells, saltCell, log
+
+    def makeSurfsAndCells(self):
+        '''
+        '''
+        surfs = '\n\n%____________________Surfaces____________________'
+        cells = '\n\n%____________________Cells_______________________'
+        
+        #Make surfs for pot
+        surfs += f'\n%outer wall for the pot\nsurf sCYL1 cyl 0.0 0.0 {self.potRadius}'
+        surfs += f'\n%inner wall of shield\nsurf sCYL2 cyl 0.0 0.0 {self.potRadius-self.shieldThickness}'
+
+        cells += '\n%Void\ncell 999 0 outside sCYL1'
+        cells += '\n%B4C Shield\ncell B4CShield 0 natb4c -sCYL1 sCYL2'
+        #TODO Change this
+        #cells += '\ncell log 0 fill 2 -sCYL2'
+
+        latticePitch = graphiteLinearExpansion(self.latticePitch, self.gr_tempK) * 2.0 - 0.001
+
+        surfs += f'%graphite for outside reflector\nsurf sHEX1 hexxc 0.0 0.0 {latticePitch}'
+        cells += f'%graphite reflector shield cell\ncell reflector 3 graphite -sHEX1'
+
+        cells += dedent(f'''
+        % LATTICE FOR CORE
+        %lat <uni> <type> 0 0 <nx> <ny> <p>
+        lat univ_lat 2 0 0 17 17 {latticePitch}
+        %0 1 2 3 4 5 6 7 c 9 0 1 2 3 4 5 6
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+         3 3 3 3 3 3 3 3 3 2 2 2 2 3 3 3 3 %1
+         3 3 3 3 3 3 3 2 2 2 2 2 2 2 3 3 3 %2
+         3 3 3 3 3 3 2 2 2 2 2 2 2 2 3 3 3 %3
+         3 3 3 3 3 2 2 2 2 2 2 2 2 2 3 3 3 %4
+         3 3 3 3 2 2 2 2 2 2 2 2 2 2 3 3 3 %5
+         3 3 3 3 2 2 2 2 3 2 2 2 2 3 3 3 3 %c
+         3 3 3 2 2 2 2 2 2 2 2 2 2 3 3 3 3 %7
+         3 3 3 2 2 2 2 2 2 2 2 2 3 3 3 3 3 %8
+         3 3 3 2 2 2 2 2 2 2 2 3 3 3 3 3 3 %9
+         3 3 3 2 2 2 2 2 2 2 3 3 3 3 3 3 3 %10
+         3 3 3 3 2 2 2 2 3 3 3 3 3 3 3 3 3 %11
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+         3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3''')
+        
+        cells += '\ncell core 0 fill univ_lat -sCYL2'
+
+
         return surfs, cells
 
+    def makeMats(self) -> str:
+
+        grFrac  = 1.0 - self.boronGraphite
+        b10Frac = 0.2 * self.boronGraphite
+        b11Frac = 0.8 * self.boronGraphite
 
 
+        mats = '\n\n%____________________Material Definitions________'
+
+        # Graphite material definition
+        mats += dedent(f'''\n
+            % Graphite Moderator
+             mat graphite -{str(graphiteDensityExpansion(self.gr_tempK))} moder graph 6000
+             rgb 130 130 130
+             6000.{self.grLib} {grFrac}
+             5010.{self.grLib} {b10Frac}
+             5011.{self.grLib} {b11Frac}
+            % Thermal Scattering Library for Graphite
+             therm graph {self.gr_tempK} gre7.18t gre7.22t''')
+
+        # Boron Metal material definition
+        mats += dedent(f'''\n
+            % Natural Boron
+             mat boronmetal -2.3
+             rgb 75 75 75
+             5010.{self.lib} -0.199
+             5011.{self.lib} -0.801''')
+
+        #Natural B4C material definition
+        mats += dedent(f'''\n
+            % Control Rod: natural B4C
+             mat natb4c -2.418
+             rgb 46 98 255
+             5010.{self.lib} -0.14419     %   B10
+             5011.{self.lib} -0.63843     %   B11
+             6000.{self.lib} -0.21738     %   carbon''')
+
+        #Enriched B4C material definition
+        mats += dedent(f'''\n
+            % Control Rod: enriched B4C
+             mat enrb4c -2.296
+             rgb 65 65 65
+             5010.{self.lib} -0.68702     %   B10
+             5011.{self.lib} -0.08397     %   B11
+             6000.{self.lib} -0.22901     %   carbon\n\n''')
+
+        #Fuelsalt material definition
+        mats += self.salt.serpent_mat(tempK=self.fs_tempK, mat_tempK=self.mat_tempK)
+        
+        return mats
+
+    def makeDataCards(self) -> str:
+        dataCards = '\n%plots\n\nplot 3 4000 4000\nset pop 40 40 40\nsurf s1 sqc 0.0 0.0 25'
+        return dataCards
+    
+    def makeDeck(self) -> str:
+        inp  = self.makeLog()[0]
+        inp += self.makeLog()[1]
+        inp += self.makeLog()[2]
+        inp += self.makeLog()[3]
+        inp += self.makeSurfsAndCells()[0]
+        inp += self.makeSurfsAndCells()[1]
+        inp += self.makeMats()
+
+        inp += self.makeDataCards()
+        return inp
+
+    def writeDeck(self):
+        with open(self.inputName, 'w') as inp:
+            inp.write(self.makeDeck())
 
 
 if __name__ == '__main__':
-    test = serpDeck()
-    #print(test.lightPoints)
-    #a,b = test.makeSurfsAndCells()
-    #print()
-    #print()
-    #print(test.lightPoints)
-    #print(a)
-    #print()
-    #print(b)
-    test.gr_tempK = 0.0
-    a,b = test.makeLightMod(deltaX = -5.0, deltaY=7.0, cellUni='1', cellName='c')
-    test.gr_tempK = 100000.0
-    c,d = test.makeLightMod(deltaX = 7.0, deltaY=12.0, cellUni='1', cellName='h')
-    print(a)
-    print(c)
-    print(b)
-    print(d)
+    test = serpDeck(inputName='input3', grTempk=950)
+    test.writeDeck()
 
-       
- 
