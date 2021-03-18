@@ -23,7 +23,7 @@ import numpy as np
 # Geometry and mesh plotting
 do_plots = False
 # Reprocessing
-reprocess = False
+reprocess = True
 
 
 # Dictionary of fuel salts and compositions
@@ -1115,5 +1115,5 @@ def done_check(fname = 'done.dat'):
 if __name__ == '__main__':
     test = serpDeck()
     print(test.get_deck())
-
+    test.write_deck()
     test.check_val()

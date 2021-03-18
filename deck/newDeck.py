@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 
 from textwrap import dedent
-import numpy as np
-import copy
 from salts import Salt
-import serpentTools as st
+import math
+import copy
+import os
+import serpentTools
+import shutil
+
+serpentTools.settings.rc['verbosity'] = 'error'
 
 
 # Dictionary of fuel salts and compositions
-fuelsalts = {
-'NaBe_Init'  : '76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4', #NaFBeTh12
-'NaBe_Makeup' : '76%NaF + 12%BeF2 + 10.2%ThF4 + 1.8%UF4', #NaFBeTh12
-'Flibe' : '72%LiF + 16%BeF2 + 12%UF4'
+SALTS = {
+    'thorConSalt'   : '76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4',        #NaFBeTh12
+    'thorCons_ref': '76%NaF + 12%BeF2 + 10.2%ThF4 + 1.8%UF4',       #NaFBeTh12
+    'flibe'         : '72%LiF + 16%BeF2 + 12%UF4'                     #flibe
 }
 
-# Dictionary of absorbers and names
-absorbers = {
-'natb4c'    : 'Natural boron carbide',
-'enrb4c'    : 'Enriched boron carbide',
-'boronmetal': 'Boron metal'
-}
-
-do_plots = False
 GRAPHITE_CTE:float = 3.5e-6                    # Graphite linear expansion coefficient [m/m per K]
 GRAPHITE_RHO:float = 1.80                      # Graphite density at 950 K [g/cm3]
 
+
+do_plots = False
+reprocess = False
 
 
 def makePlane(point1:list, point2:list, planeName:str) -> str:
@@ -67,8 +66,8 @@ def rotateAndTranslate(point:list, rotation:float, deltaX:float, deltaY:float):
         new list of updated X and Y'''
     #Apply rotation first
     x, y = point[0], point[1]
-    xRot = x * np.cos(np.radians(rotation)) - y * np.sin(np.radians(rotation))
-    yRot = x * np.sin(np.radians(rotation)) + y * np.cos(np.radians(rotation))
+    xRot = x * math.cos(math.radians(rotation)) - y * math.sin(math.radians(rotation))
+    yRot = x * math.sin(math.radians(rotation)) + y * math.cos(math.radians(rotation))
     #Apply translation
     xTran = xRot + deltaX
     yTran = yRot + deltaY
@@ -81,28 +80,51 @@ class serpDeck(object):
     '''
 
     def __init__(self, 
-    fuel:str = 'NaBe_Init',                                 # Default fuel
-    refuel:str = 'Nabe_Makeup',                             # Fuel used in refueling
-    absorberType:str = 'enrb4c',                            # Absorber used in control rods
-    inputName:str = 'input',                                # Input file name
-    outputName:str = 'output',                              # Output file name
-    e:float = 0.02,                                         # Enrichment of Uranium in fuel
-    refuel_e:float = 0.04,                                  # Enrichment of Uranium in fuel used for refueling
-    grTempk:float = 293.0,                                  # Graphite temperature [k]  
+    fuel:str         = 'thorConSalt',                         
+    refuel:str       = 'thorCons_ref',                       # Salt used in refueling
+    inputName:str    = 'input',                             # Input file name
+    e:float          = 0.17,                                # Enrichment of Uranium in fuel
+    e_ref:float      = 0.20,                                # Enrichment of Uranium in fuel used for refueling
     ):  
 
-        self.rodPosition:list = [0, 0 , 0 , 0 , 0 ,0]       # Position of the control rods
-        self.fs_tempK:float = 900.0                         # Salt temperature for density
-        self.mat_tempK:float = 900.0                        # Salt temperature for material temp
-        self.gr_tempK:float = grTempk                       # Graphite temperature
-        self.gr_dens:float = 1.80                           # Graphite density at 950 K [g/cm3]
 
-        self.histories:int = 5000                           # Neutron histories per cycle
+        try:                                               # Check if salt is known
+           self.salt_formula = SALTS[fuel]
+           self.salt_formula_r = SALTS[refuel]
+        except ValueError:
+           ValueError("Salt "+fuel+" is undefined.")
+
 
         self.inputName = inputName
-        self.e = e
-        self.fuel = fuel
-        self.salt_formula = fuelsalts[self.fuel]
+        self.e               = e
+        self.salt_name       = fuel                               # Default salt
+        self.s               = Salt(self.salt_formula, e)
+        self.salt_name_r     = refuel
+        self.s_r             = Salt(self.salt_formula_r, e_ref)
+        self.fs_tempK:float  = 908.15                         # Salt temperature for density
+        self.mat_tempK:float = 908.15                        # Salt temperature for material temp
+        self.gr_tempK:float  = 908.15                       # Graphite temperature
+        self.gr_dens:float   = 1.80                           # Graphite density at 950 K [g/cm3]
+
+        self.k:float    = None
+        self.kerr:float = None
+
+        self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
+        self.lib:str       = '09c'      # CE xsection temp selection salt
+        self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
+        self.queue:str     = 'local'     # NEcluster torque queue
+        self.histories:int = 5000       # Neutron histories per cycle
+        self.ompcores:int  = 8          # OMP core count
+        self.deck_name:str = 'core'      # Serpent input file name
+        self.deck_path:str = '.'        # Where to run the lattice deck
+        self.qsub_path:str = os.path.expanduser('~/run.sh')  # Full path to the qsub script
+        self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
+        self.boron_graphite:float = 2e-06     # 2ppm boron in graphite
+
+        self.busteps = [1, 3, 5, 7, 9]
+
+
+
 
         # From https://thorconpower.com/docs/exec_summary2.pdf
         # Look at page 57 for references to dark and light moderator, and nubs
@@ -143,15 +165,11 @@ class serpDeck(object):
         self.potRadius:float = 243.048                      # cm - Radius of the pot
         self.shieldThickness:float = 10.0                   # cm - Thicness of shield
         self.latticePitch:float = 19.0552                   # cm - Pitch of the main lattice
+        self.log_height:float = 378.0                       # cm - height of the core log
+        self.log_hat_height:float = 50.0                    # cm - height of the top and bottom log hats
+        self.plenum_height:float = 2.0                      # cm - height of the top and bottom plenums
 
-        #Make fuelsalt
-        
-        self.salt = Salt(f=self.salt_formula, e=self.e)
 
-        #Material Values
-        self.lib:str = '09c'                                # Cross section library for salt
-        self.grLib:str = '09c'                              # Cross section library for graphite
-        self.boronGraphite:float = 2e-6                     # 2ppm boron in graphite
 
 
     
@@ -285,18 +303,26 @@ class serpDeck(object):
         surfs = '\n\n%____________________Surfaces____________________'
         cells = '\n\n%____________________Cells_______________________'
         
+        half_height:float = self.log_height/2 + self.plenum_height + self.log_hat_height
+        half_core:float = self.log_height/2.0
         #Make surfs for pot
-        surfs += f'\n%outer wall for the pot\nsurf sCYL1 cyl 0.0 0.0 {self.potRadius}'
-        surfs += f'\n%inner wall of shield\nsurf sCYL2 cyl 0.0 0.0 {self.potRadius-self.shieldThickness}'
+        surfs += f'\n%outer wall for the pot\nsurf pot cyl 0.0 0.0 {self.potRadius} -{graphiteLinearExpansion(half_height, self.gr_tempK)} {graphiteLinearExpansion(half_height, self.gr_tempK)}'
+        surfs += f'\n%inner wall of shield\nsurf inShield cyl 0.0 0.0 {self.potRadius-self.shieldThickness}'
+        surfs += f'\n%top of the core\nsurf topCore pz {graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
+        surfs += f'\b%top salt plenum\nsurf topPlenum pz {graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
+        surfs += f'\n%bottom of the core\nsurf botCore pz -{graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
+        surfs += f'\n%bottom salt plenum\n surf botPlenum pz -{graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
 
-        cells += '\n%Void\ncell 999 0 outside sCYL1'
-        cells += '\n%B4C Shield\ncell B4CShield 0 natb4c -sCYL1 sCYL2'
-        #TODO Change this
-        #cells += '\ncell log 0 fill 2 -sCYL2'
+        cells += '\n%Void\ncell 999 0 outside pot'
+        cells += '\n%B4C Shield\ncell B4CShield 0 natb4c -pot inShield -topCore botCore'
+        cells += '\n%top salt plenum\n cell topSalt 0 fuelsalt -pot topCore -topPlenum'
+        cells += '\n%top reflector\ncell topRef 0 graphite -pot topPlenum'
+        cells += '\n%bottom salt plenum\n cell botSalt 0 fuelsalt -pot -botCore botPlenum'
+        cells += '\n%bottom reflector\ncell botRef 0 graphite -pot -botPlenum'        
 
         latticePitch = graphiteLinearExpansion(self.latticePitch, self.gr_tempK) * 2.0 - 0.001
 
-        surfs += f'%graphite for outside reflector\nsurf sHEX1 hexxc 0.0 0.0 {latticePitch}'
+        surfs += f'%graphite for outside reflector\nsurf sHEX1 hexxc 0.0 0.0 {graphiteLinearExpansion(self.latticePitch, self.gr_tempK)}'
         cells += f'%graphite reflector shield cell\ncell reflector 3 graphite -sHEX1'
 
         cells += dedent(f'''
@@ -322,16 +348,16 @@ class serpDeck(object):
          3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
          3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3''')
         
-        cells += '\ncell core 0 fill univ_lat -sCYL2'
+        cells += '\ncell core 0 fill univ_lat -inShield -pot -topCore botCore'
 
 
         return surfs, cells
 
     def makeMats(self) -> str:
 
-        grFrac  = 1.0 - self.boronGraphite
-        b10Frac = 0.2 * self.boronGraphite
-        b11Frac = 0.8 * self.boronGraphite
+        grFrac  = 1.0 - self.boron_graphite
+        b10Frac = 0.2 * self.boron_graphite
+        b11Frac = 0.8 * self.boron_graphite
 
 
         mats = '\n\n%____________________Material Definitions________'
@@ -341,9 +367,9 @@ class serpDeck(object):
             % Graphite Moderator
              mat graphite -{str(graphiteDensityExpansion(self.gr_tempK))} moder graph 6000
              rgb 130 130 130
-             6000.{self.grLib} {grFrac}
-             5010.{self.grLib} {b10Frac}
-             5011.{self.grLib} {b11Frac}
+             6000.{self.gr_lib} {grFrac}
+             5010.{self.gr_lib} {b10Frac}
+             5011.{self.gr_lib} {b11Frac}
             % Thermal Scattering Library for Graphite
              therm graph {self.gr_tempK} gre7.18t gre7.22t''')
 
@@ -368,21 +394,99 @@ class serpDeck(object):
         mats += dedent(f'''\n
             % Control Rod: enriched B4C
              mat enrb4c -2.296
-             rgb 65 65 65
-             5010.{self.lib} -0.68702     %   B10
-             5011.{self.lib} -0.08397     %   B11
-             6000.{self.lib} -0.22901     %   carbon\n\n''')
+              rgb 65 65 65
+              5010.{self.lib} -0.68702     %   B10
+              5011.{self.lib} -0.08397     %   B11
+              6000.{self.lib} -0.22901     %   carbon''')
 
-        #Fuelsalt material definition
-        mats += self.salt.serpent_mat(tempK=self.fs_tempK, mat_tempK=self.mat_tempK)
+        #Helium mat definition
+        mats += dedent(f'''\n
+            %  HELIUM: gas due to alpha particles
+            %  DENSITY: 54.19 E-6 g/cc
+            mat he -54.19E-6
+             rgb 255 245 213
+             2004.{self.lib} 1''')
+
+        #Offgas and overflow tank
+        mats += dedent(f'''\n
+            % Offgas tank
+            mat offgas -0.001 burn 1 vol 1e9
+             2004.{self.lib} 1
+
+            % Overflow tank
+            mat overflow -0.001 burn 1 vol 1e9
+             2004.{self.lib} 1\n\n''')
+
         
         return mats
 
     def makeDataCards(self) -> str:
-        dataCards = '\n%plots\n\nplot 3 4000 4000\nset pop 40 40 40\nsurf s1 sqc 0.0 0.0 25'
-        return dataCards
+        data_cards = dedent(f'''\n
+            set power 557000000  % Watts busteps = [1, 3, 5, 7, 9]
+            %set volume checker
+            set mcvol 10000000
+
+            % Neutron population and criticality cycles
+            set pop {self.histories} 100 40 % {self.histories} neutrons, 100 active, 40 inactive cycles
+            % Analog reaction rate
+            set arr 2
+            set printm 1''')
+
+        if self.nuc_libs == "ENDF7":
+            data_cards += dedent('''
+            % Data Libraries
+            set acelib "sss_endfb7u.sssdir"
+            set declib "sss_endfb7.dec"
+            set nfylib "sss_endfb7.nfy"''')
+
+        if do_plots:
+            data_cards += dedent('''
+            % Data Libraries
+            set acelib "/opt/serpent/xsdata/sss_endfb7u.xsdata"
+            set declib "/opt/serpent/xsdata/sss_endfb7.dec"
+            set nfylib "/opt/serpent/xsdata/sss_endfb7.nfy"''')
+
+        if reprocess:
+            inp_steps = (self.busteps).copy()
+            busteps2 = str(inp_steps).replace('[', '').replace(']', '').replace(',', ' ')
+            steps = str(busteps2).replace(']', '').replace('[', '')
+            inp_rep = ''
+            minp = 0.1
+            count = 0
+            for w in self.s_r.wflist:
+                count += 1
+                inp_rep += '%3d%03d.%s ' % (w.Z, w.A, self.lib) + str(minp)
+                inp_rep += '    %  ' + self.s_r.ELEMENTS[w.Z].symbol + '-' + str(w.A) + '\n'
+            overflow_minp = minp * 1e-3
+            data_cards += dedent(f'''
+                % Flow Setup
+                mflow fuel_in
+                {inp_rep}
+
+                mflow off_gas
+                Ne {minp}
+                Ar {minp}
+                He {minp}
+                Kr {minp}
+                Xe {minp}
+                Rn {minp}
+
+                mflow over
+                all {overflow_minp}
+
+
+                % Reprocessing Control
+                rep reprocessing
+                rc fuelsalt_rep fuelsalt fuel_in 0
+                %rc fuelsalt_rep fuelsaltp fuel_in 0 % Serpent forums https://ttuki.vtt.fi/serpent/viewtopic.php?f=25&t=3154&p=9701&hilit=ProcessBurnMat#p9701
+                rc fuelsalt offgas off_gas 1
+                %rc fuelsaltp offgas off_gas 1 % Forum post suggested replacing pins with surface-cells
+                rc fuelsalt overflow over 1
+                %rc fuelsaltp overflow over 1 % This is a temporary fix which simply removes flow inside the control and safety rod channels''')
+
+        return data_cards
     
-    def makeDeck(self) -> str:
+    def get_deck(self) -> str:
         inp  = self.makeLog()[0]
         inp += self.makeLog()[1]
         inp += self.makeLog()[2]
@@ -390,16 +494,90 @@ class serpDeck(object):
         inp += self.makeSurfsAndCells()[0]
         inp += self.makeSurfsAndCells()[1]
         inp += self.makeMats()
-
+        inp += self.s.serpent_mat(self.fs_tempK, self.mat_tempK, self.lib)
+        if reprocess:
+            inp += self.s_r.serpent_matr(self.fs_tempK, self.mat_tempK, self.lib)
         inp += self.makeDataCards()
         return inp
 
-    def writeDeck(self):
-        with open(self.inputName, 'w') as inp:
-            inp.write(self.makeDeck())
+    def save_deck(self):
+        '''Saves Serpent deck into an input file'''
+        try:
+            os.makedirs(self.deck_path, exist_ok=True)
+            fh = open(self.deck_path + '/' + self.deck_name, 'w')
+            fh.write(self.get_deck())
+            fh.close()
+        except IOError as e:
+            print("[ERROR] Unable to write to file: ",
+                  self.deck_path + '/' + self.deck_name)
+            print(e)
+
+    def get_calculated_values(self) -> bool:
+        'Fill k and cr for lattice if calculated'
+        if os.path.exists(self.deck_path+'/done.out') and \
+                os.path.getsize(self.deck_path+'/done.out') > 30:
+            pass
+        else:                   # Calculation not done yet
+            return False
+
+        results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
+        self.k     = results.resdata["anaKeff"][0]
+        self.kerr  = results.resdata["anaKeff"][1]
+        return True
+
+    def save_qsub_file(self):
+        'Writes run file for TORQUE.'
+        qsub_content = dedent(f'''
+            #!/bin/bash
+            #PBS -V
+            #PBS -N Serp2MSR_lat
+            #PBS -q {self.queue}
+            #PBS -l nodes=1:ppn={self.ompcores}
+            hostname
+            rm -f done.dat
+            cd ${{PBS_O_WORKDIR}}
+            module load mpi
+            module load serpent
+            sss2 -omp {self.ompcores} {self.deck_name} > myout.out
+            awk 'BEGIN{{ORS="\\t"}} /ANA_KEFF/ || /CONVERSION/ {{print $7" "$8;}}' {self.deck_name}_res.m > done.out
+            rm {self.deck_name}.out
+            ''')
+        try:                # Write the deck
+            f = open(self.qsub_path, 'w')
+            f.write(qsub_content)
+            f.close()
+        except IOError as e:
+            print("Unable to write to file", f)
+            print(e)
+
+    def run_deck(self):
+        'Runs the deck using qsub_path script'
+        if self.queue == 'local':    # Run the deck locally
+            os.chdir(self.deck_path)
+            os.system(self.qsub_path)
+        else:               # Submit the job on the cluster
+            os.system('cd ' + self.deck_path + ' && qsub ' + self.qsub_path)
+
+    def cleanup(self, purge:bool=True):
+        'Delete the run directory'
+        if os.path.isdir(self.deck_path):
+            if purge:
+                shutil.rmtree(self.deck_path)
+            else:
+                with os.scandir(self.deck_path) as it:
+                    for entry in it:
+                        if entry.is_file():
+                            os.remove(entry)
+
+
 
 
 if __name__ == '__main__':
-    test = serpDeck(inputName='input3', grTempk=950)
-    test.writeDeck()
+    test = serpDeck()
+    test.save_deck()
+    test.save_qsub_file()
+    test.run_deck()
+    test.get_calculated_values()
+    print(test.k)
+    print(test.kerr)
 
