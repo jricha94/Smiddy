@@ -574,11 +574,11 @@ class serpDeck(object):
 
 if __name__ == '__main__':
     test = serpDeck()
-    #test.save_deck()
-    #test.save_qsub_file()
-    #test.run_deck()
-    #test.get_calculated_values()
-    #print(test.k)
-    #print(test.kerr)
-    print(test.qsub_path)
+    test.save_deck()
+    test.save_qsub_file()
+    test.run_deck()
+    test.get_calculated_values()
+    print(test.k)
+    print(test.kerr)
+    
 
