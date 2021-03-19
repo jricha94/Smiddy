@@ -112,12 +112,12 @@ class serpDeck(object):
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'local'     # NEcluster torque queue
+        self.queue:str     = 'fill'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 8          # OMP core count
         self.deck_name:str = 'core'      # Serpent input file name
         self.deck_path:str = '.'        # Where to run the lattice deck
-        self.qsub_path:str = os.path.expanduser('~/run.sh')  # Full path to the qsub script
+        self.qsub_path:str = os.path.expanduser('run.sh')  # Full path to the qsub script
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
         self.boron_graphite:float = 2e-06     # 2ppm boron in graphite
 
@@ -574,10 +574,11 @@ class serpDeck(object):
 
 if __name__ == '__main__':
     test = serpDeck()
-    test.save_deck()
-    test.save_qsub_file()
-    test.run_deck()
-    test.get_calculated_values()
-    print(test.k)
-    print(test.kerr)
+    #test.save_deck()
+    #test.save_qsub_file()
+    #test.run_deck()
+    #test.get_calculated_values()
+    #print(test.k)
+    #print(test.kerr)
+    print(test.qsub_path)
 
