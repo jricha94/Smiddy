@@ -8,6 +8,8 @@ import os
 import serpentTools
 import shutil
 
+import time
+
 serpentTools.settings.rc['verbosity'] = 'error'
 
 
@@ -24,6 +26,7 @@ GRAPHITE_RHO:float = 1.80                      # Graphite density at 950 K [g/cm
 
 do_plots = False
 reprocess = False
+
 
 
 def makePlane(point1:list, point2:list, planeName:str) -> str:
@@ -82,7 +85,7 @@ class serpDeck(object):
     def __init__(self, 
     fuel:str         = 'thorConSalt',                         
     refuel:str       = 'thorCons_ref',                       # Salt used in refueling
-    inputName:str    = 'input',                             # Input file name
+    inputName:str    = 'core',                             # Input file name
     e:float          = 0.17,                                # Enrichment of Uranium in fuel
     e_ref:float      = 0.20,                                # Enrichment of Uranium in fuel used for refueling
     ):  
@@ -115,9 +118,10 @@ class serpDeck(object):
         self.queue:str     = 'fill'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 8          # OMP core count
-        self.deck_name:str = 'core'      # Serpent input file name
-        self.deck_path:str = '.'        # Where to run the lattice deck
-        self.qsub_path:str = os.path.expanduser('run.sh')  # Full path to the qsub script
+        self.deck_name:str = inputName  # Serpent input file name
+        self.save_qsub_name:str = 'run.sh' #name for shell file to run serpent
+        self.deck_path:str = f'/{self.deck_name}'        # Where to run the lattice deck
+        self.CWD:str       = os.getcwd()
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
         self.boron_graphite:float = 2e-06     # 2ppm boron in graphite
 
@@ -354,7 +358,6 @@ class serpDeck(object):
         return surfs, cells
 
     def makeMats(self) -> str:
-
         grFrac  = 1.0 - self.boron_graphite
         b10Frac = 0.2 * self.boron_graphite
         b11Frac = 0.8 * self.boron_graphite
@@ -500,30 +503,30 @@ class serpDeck(object):
         inp += self.makeDataCards()
         return inp
 
+    def get_calculated_values(self) -> bool:
+        'Fill k and cr for lattice if calculated'
+        if os.path.exists(self.CWD + self.deck_path+'/done.out') and \
+                os.path.getsize(self.CWD + self.deck_path+'/done.out') > 30:
+            pass
+        else:                   # Calculation not done yet
+            return False
+
+        results = serpentTools.read(self.CWD + self.deck_path + '/' + self.deck_name + "_res.m")
+        self.k     = results.resdata["anaKeff"][0]
+        self.kerr  = results.resdata["anaKeff"][1]
+        return True
+
     def save_deck(self):
         '''Saves Serpent deck into an input file'''
         try:
-            os.makedirs(self.deck_path, exist_ok=True)
-            fh = open(self.deck_path + '/' + self.deck_name, 'w')
+            os.makedirs(self.CWD + self.deck_path, exist_ok=True)
+            fh = open(self.CWD + self.deck_path + '/' + self.deck_name, 'w')
             fh.write(self.get_deck())
             fh.close()
         except IOError as e:
             print("[ERROR] Unable to write to file: ",
                   self.deck_path + '/' + self.deck_name)
             print(e)
-
-    def get_calculated_values(self) -> bool:
-        'Fill k and cr for lattice if calculated'
-        if os.path.exists(self.deck_path+'/done.out') and \
-                os.path.getsize(self.deck_path+'/done.out') > 30:
-            pass
-        else:                   # Calculation not done yet
-            return False
-
-        results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
-        self.k     = results.resdata["anaKeff"][0]
-        self.kerr  = results.resdata["anaKeff"][1]
-        return True
 
     def save_qsub_file(self):
         'Writes run file for TORQUE.'
@@ -543,7 +546,7 @@ class serpDeck(object):
             rm {self.deck_name}.out
             ''')
         try:                # Write the deck
-            f = open(self.qsub_path, 'w')
+            f = open(self.CWD + self.deck_path + f'/{qsub_name}', 'w')
             f.write(qsub_content)
             f.close()
         except IOError as e:
@@ -554,17 +557,18 @@ class serpDeck(object):
         'Runs the deck using qsub_path script'
         if self.queue == 'local':    # Run the deck locally
             os.chdir(self.deck_path)
-            os.system(self.qsub_path)
+            os.system(f'sss2 -omp {self.ompcores} {self.deck_name} > done.out')
+            os.system(f'rm {self.deck_name}.out')
         else:               # Submit the job on the cluster
-            os.system('cd ' + self.deck_path + ' && qsub ' + self.qsub_path)
+            os.system('cd ' + self.CWD + self.deck_path + f' && qsub {qsub_name}')
 
     def cleanup(self, purge:bool=True):
         'Delete the run directory'
-        if os.path.isdir(self.deck_path):
+        if os.path.isdir(self.CWD + self.deck_path):
             if purge:
-                shutil.rmtree(self.deck_path)
+                shutil.rmtree(self.CWD + self.deck_path)
             else:
-                with os.scandir(self.deck_path) as it:
+                with os.scandir(self.CWD + self.deck_path) as it:
                     for entry in it:
                         if entry.is_file():
                             os.remove(entry)
@@ -576,9 +580,9 @@ if __name__ == '__main__':
     test = serpDeck()
     test.save_deck()
     test.save_qsub_file()
-    test.run_deck()
-    test.get_calculated_values()
-    print(test.k)
-    print(test.kerr)
+    time.sleep(10)
+    test.cleanup()
+
+
     
 
