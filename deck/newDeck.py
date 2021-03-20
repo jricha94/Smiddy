@@ -580,8 +580,10 @@ if __name__ == '__main__':
     test = serpDeck()
     test.save_deck()
     test.save_qsub_file()
-    time.sleep(10)
-    test.cleanup()
+    test.run_deck()
+    test.get_calculated_values()
+    print(test.k)
+    print(test.kerr)
 
 
     
