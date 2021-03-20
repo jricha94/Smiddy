@@ -546,7 +546,7 @@ class serpDeck(object):
             rm {self.deck_name}.out
             ''')
         try:                # Write the deck
-            f = open(self.CWD + self.deck_path + f'/{qsub_name}', 'w')
+            f = open(self.CWD + self.deck_path + f'/{self.qsub_name}', 'w')
             f.write(qsub_content)
             f.close()
         except IOError as e:
@@ -560,7 +560,7 @@ class serpDeck(object):
             os.system(f'sss2 -omp {self.ompcores} {self.deck_name} > done.out')
             os.system(f'rm {self.deck_name}.out')
         else:               # Submit the job on the cluster
-            os.system('cd ' + self.CWD + self.deck_path + f' && qsub {qsub_name}')
+            os.system('cd ' + self.CWD + self.deck_path + f' && qsub {self.qsub_name}')
 
     def cleanup(self, purge:bool=True):
         'Delete the run directory'
@@ -577,7 +577,7 @@ class serpDeck(object):
 
 
 if __name__ == '__main__':
-    test = serpDeck()
+    test = serpDeck()``
     test.save_deck()
     test.save_qsub_file()
     test.run_deck()
