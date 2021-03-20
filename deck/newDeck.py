@@ -119,7 +119,7 @@ class serpDeck(object):
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 8          # OMP core count
         self.deck_name:str = inputName  # Serpent input file name
-        self.save_qsub_name:str = 'run.sh' #name for shell file to run serpent
+        self.qsub_name:str = 'run.sh' #name for shell file to run serpent
         self.deck_path:str = f'/{self.deck_name}'        # Where to run the lattice deck
         self.CWD:str       = os.getcwd()
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
@@ -584,6 +584,7 @@ if __name__ == '__main__':
     test.get_calculated_values()
     print(test.k)
     print(test.kerr)
+    test.cleanup()
 
 
     
