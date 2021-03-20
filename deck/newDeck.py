@@ -505,11 +505,15 @@ class serpDeck(object):
 
     def get_calculated_values(self) -> bool:
         'Fill k and cr for lattice if calculated'
-        if os.path.exists(self.CWD + self.deck_path+'/done.out') and \
+        is_done = False
+        while not is_done:
+            time.sleep(10)          #Wait for serpent
+            if os.path.exists(self.CWD + self.deck_path+'/done.out') and \
                 os.path.getsize(self.CWD + self.deck_path+'/done.out') > 30:
-            pass
-        else:                   # Calculation not done yet
-            return False
+                is_done = True
+                break
+            else:                   # Calculation not done yet
+                continue
 
         results = serpentTools.read(self.CWD + self.deck_path + '/' + self.deck_name + "_res.m")
         self.k     = results.resdata["anaKeff"][0]
@@ -533,7 +537,7 @@ class serpDeck(object):
         qsub_content = dedent(f'''
             #!/bin/bash
             #PBS -V
-            #PBS -N Serp2MSR_lat
+            #PBS -N ThorCon_like_lat
             #PBS -q {self.queue}
             #PBS -l nodes=1:ppn={self.ompcores}
             hostname
@@ -577,14 +581,14 @@ class serpDeck(object):
 
 
 if __name__ == '__main__':
-    test = serpDeck()``
+    test = serpDeck()
     test.save_deck()
     test.save_qsub_file()
     test.run_deck()
     test.get_calculated_values()
     print(test.k)
     print(test.kerr)
-    test.cleanup()
+    
 
 
     
