@@ -443,50 +443,10 @@ class serpDeck(object):
             set nfylib "sss_endfb7.nfy"''')
 
         if do_plots:
-            data_cards += dedent('''
-            % Data Libraries
-            set acelib "/opt/serpent/xsdata/sss_endfb7u.xsdata"
-            set declib "/opt/serpent/xsdata/sss_endfb7.dec"
-            set nfylib "/opt/serpent/xsdata/sss_endfb7.nfy"''')
+            pass
 
         if reprocess:
-            inp_steps = (self.busteps).copy()
-            busteps2 = str(inp_steps).replace('[', '').replace(']', '').replace(',', ' ')
-            steps = str(busteps2).replace(']', '').replace('[', '')
-            inp_rep = ''
-            minp = 0.1
-            count = 0
-            for w in self.s_r.wflist:
-                count += 1
-                inp_rep += '%3d%03d.%s ' % (w.Z, w.A, self.lib) + str(minp)
-                inp_rep += '    %  ' + self.s_r.ELEMENTS[w.Z].symbol + '-' + str(w.A) + '\n'
-            overflow_minp = minp * 1e-3
-            data_cards += dedent(f'''
-                % Flow Setup
-                mflow fuel_in
-                {inp_rep}
-
-                mflow off_gas
-                Ne {minp}
-                Ar {minp}
-                He {minp}
-                Kr {minp}
-                Xe {minp}
-                Rn {minp}
-
-                mflow over
-                all {overflow_minp}
-
-
-                % Reprocessing Control
-                rep reprocessing
-                rc fuelsalt_rep fuelsalt fuel_in 0
-                %rc fuelsalt_rep fuelsaltp fuel_in 0 % Serpent forums https://ttuki.vtt.fi/serpent/viewtopic.php?f=25&t=3154&p=9701&hilit=ProcessBurnMat#p9701
-                rc fuelsalt offgas off_gas 1
-                %rc fuelsaltp offgas off_gas 1 % Forum post suggested replacing pins with surface-cells
-                rc fuelsalt overflow over 1
-                %rc fuelsaltp overflow over 1 % This is a temporary fix which simply removes flow inside the control and safety rod channels''')
-
+           pass
         return data_cards
     
     def get_deck(self) -> str:
