@@ -1,6 +1,8 @@
 #!usr/bin/env python3
 
 from newDeck import serpDeck
+import os
+
 
 
 def rho(k:float) -> float:
@@ -22,7 +24,7 @@ class burnup(object):
         self.conv_enr:float = None      # Converged value of enrichment
         self.conv_rho:float = None      # Converged value of rho [pcm]
         self.conv_rhoerr:float = None   # Converged value of sigma_rho [pcm]
-        self.force_recalc:bool = False  # Force recalculation of existing data
+
 
     def iterate_rho(self) -> bool:
         'Execute the convergence search https://en.wikipedia.org/wiki/Regula_falsi#Example_code'
