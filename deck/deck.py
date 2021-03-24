@@ -122,7 +122,7 @@ class serpDeck(object):
         self.qsub_name:str = 'run.sh' #name for shell file to run serpent
         self.deck_path:str = os.getcwd() + f'/{self.deck_name}'        # Where to run the lattice deck
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
-        self.do_plots:bool = False
+        self.do_plots:bool = True
 
         self.reprocess:bool = reprocess
         self.vol:int = 5468000 if self.reprocess else None
@@ -483,19 +483,19 @@ class serpDeck(object):
             pro source_rep
             daystep
             0.0208 0.0208 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-            7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-            7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-            7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-            7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-            7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %burn up for one year
 
-            set inventory
-            1
-            86
-            fp
-            lanthanides
-            actinides''')
+            %set inventory
+            %1
+            %86
+            %fp
+            %lanthanides
+            %actinides''')
 
 
         return data_cards
@@ -596,9 +596,9 @@ if __name__ == '__main__':
     test = serpDeck(reprocess = True)
     test.cleanup()
     test.save_deck()
-    test.run_deck()
-    test.get_calculated_values()
-    print(test.k, test.kerr)
+#    test.run_deck()
+#    test.get_calculated_values()
+#    print(test.k, test.kerr)
 
     
 
