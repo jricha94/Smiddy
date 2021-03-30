@@ -228,10 +228,6 @@ set printm 1
 set acelib "sss_endfb7u.sssdir"
 set declib "sss_endfb7.dec"
 set nfylib "sss_endfb7.nfy"
-% Plots
-plot 1 2000  2000 0
-plot 2 2000  2000 0
-plot 3 2000  2000 0
 %__________reprocessing cards_____
 
 % Offgas tank
@@ -246,30 +242,30 @@ mat overflow -0.001 burn 1 vol 1e9 tmp 908.15
 
 %_______mass flow definitions______
 
-mflow U_in
-all 1e-09
+%mflow U_in
+%all 1e-09
 
-mflow offgasratecore
-Ne 1e-2
-Ar 1e-2
-He 1e-2
-Kr 1e-2
-Xe 1e-2
-Rn 1e-2
+%mflow offgasratecore
+%Ne 1e-2
+%Ar 1e-2
+%He 1e-2
+%Kr 1e-2
+%Xe 1e-2
+%Rn 1e-2
 
-% need to account for the increase in vloume with refueling
-mflow over
-all 1e-09
+%% need to account for the increase in vloume with refueling
+%mflow over
+%all 1e-09
 
-rep source_rep
-rc fuelsalt_rep fuelsalt U_in 0
-rc fuelsalt offgas offgasratecore 1
-rc fuelsalt overflow over 1
+%rep source_rep
+%rc fuelsalt_rep fuelsalt U_in 0
+%rc fuelsalt offgas offgasratecore 1
+%rc fuelsalt overflow over 1
 
 dep
-pro source_rep
+%pro source_rep
 daystep
-0.0208 0.0208 7 7 7 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+0.0208 0.0208 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7

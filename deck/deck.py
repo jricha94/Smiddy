@@ -124,7 +124,7 @@ class serpDeck(object):
         self.qsub_name:str = 'run.sh' #name for shell file to run serpent
         self.deck_path:str = os.getcwd() + f'/{self.deck_name}'        # Where to run the lattice deck
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
-        self.do_plots:bool = True
+        self.do_plots:bool = False
 
         self.reprocess:bool = reprocess
         self.vol:int = 5468000 if self.reprocess else None
@@ -461,30 +461,30 @@ class serpDeck(object):
            
             %_______mass flow definitions______
 
-            mflow U_in
-            all {self.rep_rate}
+            %mflow U_in
+            %all {self.rep_rate}
 
-            mflow offgasratecore
-            Ne 1e-2
-            Ar 1e-2
-            He 1e-2
-            Kr 1e-2
-            Xe 1e-2
-            Rn 1e-2
+            %mflow offgasratecore
+            %Ne 1e-2
+            %Ar 1e-2
+            %He 1e-2
+            %Kr 1e-2
+            %Xe 1e-2
+            %Rn 1e-2
 
-            % need to account for the increase in vloume with refueling
-            mflow over
-            all {self.re_rep}
+            %% need to account for the increase in vloume with refueling
+            %mflow over
+            %all {self.re_rep}
 
-            rep source_rep
-            rc fuelsalt_rep fuelsalt U_in 0
-            rc fuelsalt offgas offgasratecore 1
-            rc fuelsalt overflow over 1
+            %rep source_rep
+            %rc fuelsalt_rep fuelsalt U_in 0
+            %rc fuelsalt offgas offgasratecore 1
+            %rc fuelsalt overflow over 1
 
             dep
-            pro source_rep
+            %pro source_rep
             daystep
-            0.0208 0.0208 7 7 7 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            0.0208 0.0208 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
@@ -600,8 +600,8 @@ if __name__ == '__main__':
     test.cleanup()
     test.save_deck()
     test.save_qsub_file()
-    test.run_deck()
     #test.run_deck()
+    test.run_deck()
     #test.get_calculated_values()
     #print(test.k, test.kerr, test.betas)
 
