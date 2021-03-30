@@ -235,11 +235,11 @@ plot 3 2000  2000 0
 %__________reprocessing cards_____
 
 % Offgas tank
-mat offgas -0.001 burn 1 vol 1e9
+mat offgas -0.001 burn 1 vol 1e9 tmp 908.15
  2004.09c 1
 
 % Overflow tank
-mat overflow -0.001 burn 1 vol 1e9
+mat overflow -0.001 burn 1 vol 1e9 tmp 908.15
  2004.09c 1
 
 
@@ -277,9 +277,9 @@ daystep
 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
 %burn up for one year
 
-%set inventory
-%1
-%86
-%fp
-%lanthanides
-%actinides
+set inventory
+1
+86
+fp
+lanthanides
+actinides
