@@ -109,13 +109,15 @@ class serpDeck(object):
         self.gr_dens:float   = 1.80                           # Graphite density at 950 K [g/cm3]
         self.boron_graphite:float = 2e-06     # 2ppm boron in graphite
 
-        self.k:float    = None
-        self.kerr:float = None
+        self.k:float    = None                  # k-effective for model
+        self.kerr:float = None                  # k-eff error
+        self.betas:list = None                  # delayed neutron fractions
+        self.ngt:float  = None                  # neutron generation time [s^-1]
 
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'local'     # NEcluster torque queue
+        self.queue:str     = 'fill'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
         self.deck_name:str = inputName  # Serpent input file name
@@ -482,7 +484,7 @@ class serpDeck(object):
             dep
             pro source_rep
             daystep
-            0.0208 0.0208 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+            0.0208 0.0208 7 7 7 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
@@ -529,6 +531,7 @@ class serpDeck(object):
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
         self.k     = results.resdata["anaKeff"][0]
         self.kerr  = results.resdata["anaKeff"][1]
+        self.betas = results.resdata["betaEff"]
         return True
 
     def save_deck(self):
@@ -596,9 +599,11 @@ if __name__ == '__main__':
     test = serpDeck(reprocess = True)
     test.cleanup()
     test.save_deck()
-#    test.run_deck()
-#    test.get_calculated_values()
-#    print(test.k, test.kerr)
+    test.save_qsub_file()
+    test.run_deck()
+    #test.run_deck()
+    #test.get_calculated_values()
+    #print(test.k, test.kerr, test.betas)
 
     
 
