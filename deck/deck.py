@@ -456,7 +456,7 @@ class serpDeck(object):
              2004.{self.lib} 1
 
             % Overflow tank
-            mat overflow -0.001 burn 1 vol 1e9
+            mat overflow -0.001 burn 1 vol 1e9 tmp {self.fs_tempK}
              2004.{self.lib} 1\n\n
            
             %_______mass flow definitions______
