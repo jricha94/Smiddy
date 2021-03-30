@@ -452,7 +452,7 @@ class serpDeck(object):
             %__________reprocessing cards_____
 
             % Offgas tank
-            mat offgas -0.001 burn 1 vol 1e9
+            mat offgas -0.001 burn 1 vol 1e9 tmp {self.fs_tempK}
              2004.{self.lib} 1
 
             % Overflow tank
