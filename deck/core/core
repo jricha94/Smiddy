@@ -191,7 +191,6 @@ mat he -54.19E-6
  rgb 255 245 213
  2004.09c 1% Fuel salt: 76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4, U enrichment 0.17
 mat fuelsalt  -3.23461294 rgb 240 30 30 tmp  908.150
-burn 1 vol 5468000
   4009.09c  -0.014486470949    %  Be-9
   9019.09c  -0.376643228401    %  F-19
  11023.09c  -0.234045100441    %  Na-23
@@ -201,17 +200,6 @@ burn 1 vol 5468000
  92236.09c  -0.000061815011    %  U-236
  92238.09c  -0.065983684138    %  U-238
 
-% Refueling Salt Tank: 76%NaF + 12%BeF2 + 10.2%ThF4 + 1.8%UF4, U enrichment 0.2
-mat fuelsalt_rep  -3.23181258 rgb 240 30 30 tmp 908.150000
-burn 1 vol 5468000
-  4009.09c  -0.014494257606    %  Be-9
-  9019.09c  -0.376845678774    %  F-19
- 11023.09c  -0.234170902565    %  Na-23
- 90232.09c  -0.317207987373    %  Th-232
- 92234.09c  -0.000100500700    %  U-234
- 92235.09c  -0.011340606090    %  U-235
- 92236.09c  -0.000052389095    %  U-236
- 92238.09c  -0.045787677796    %  U-238
 
 
 %______________Data Cards________________
@@ -228,57 +216,3 @@ set printm 1
 set acelib "sss_endfb7u.sssdir"
 set declib "sss_endfb7.dec"
 set nfylib "sss_endfb7.nfy"
-%__________reprocessing cards_____
-
-% Offgas tank
-mat offgas -0.001 burn 1 vol 1e9 tmp 908.15
- 2004.09c 1
-
-% Overflow tank
-mat overflow -0.001 burn 1 vol 1e9 tmp 908.15
- 2004.09c 1
-
-
-
-%_______mass flow definitions______
-
-
-set pcc 0 %predictor-corrector must be turned off to use depletion
-
-mflow U_in
-all 1e-09
-
-mflow offgasratecore
-Ne 1e-2
-Ar 1e-2
-He 1e-2
-Kr 1e-2
-Xe 1e-2
-Rn 1e-2
-
-% need to account for the increase in vloume with refueling
-mflow over
-all 1e-09
-
-rep source_rep
-rc fuelsalt_rep fuelsalt U_in 0
-rc fuelsalt offgas offgasratecore 1
-rc fuelsalt overflow over 1
-
-dep
-pro source_rep
-daystep
-0.0208 0.0208 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-%burn up for one year
-
-set inventory
-1
-86
-fp
-lanthanides
-actinides

@@ -117,7 +117,7 @@ class serpDeck(object):
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'fill'     # NEcluster torque queue
+        self.queue:str     = 'local'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
         self.deck_name:str = inputName  # Serpent input file name
@@ -532,9 +532,14 @@ class serpDeck(object):
                 continue
 
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
-        self.k     = results.resdata["anaKeff"][0]
-        self.kerr  = results.resdata["anaKeff"][1]
-        #####self.betas = results.resdata["betaEff"]
+        if self.reprocess:
+            self.k     = results.resdata["anaKeff"][-1][0]
+            self.kerr  = results.resdata["anaKeff"][-1][1]
+            self.betas = results.resdata["anaKeff"]
+        else:
+            self.k     = results.resdata["anaKeff"][0]
+            self.kerr  = results.resdata["anaKeff"][1]
+            self.betas = results.resdata["anaKeff"]
         return True
 
     def save_deck(self):
@@ -607,6 +612,7 @@ if __name__ == '__main__':
     test.run_deck()
     test.get_calculated_values()
     print(test.k, test.kerr)
+    print(test.betas)
 
     
 
