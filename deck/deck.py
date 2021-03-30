@@ -492,12 +492,12 @@ class serpDeck(object):
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %burn up for one year
 
-            %set inventory
-            %1
-            %86
-            %fp
-            %lanthanides
-            %actinides''')
+            set inventory
+            1
+            86
+            fp
+            lanthanides
+            actinides''')
 
 
         return data_cards
