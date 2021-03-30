@@ -463,7 +463,7 @@ class serpDeck(object):
 
 
             set pcc 0 %predictor-corrector must be turned off to use depletion
-            
+
             mflow U_in
             all {self.rep_rate}
 
@@ -534,7 +534,7 @@ class serpDeck(object):
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
         self.k     = results.resdata["anaKeff"][0]
         self.kerr  = results.resdata["anaKeff"][1]
-        self.betas = results.resdata["betaEff"]
+        #####self.betas = results.resdata["betaEff"]
         return True
 
     def save_deck(self):
@@ -605,8 +605,8 @@ if __name__ == '__main__':
     test.save_qsub_file()
     #test.run_deck()
     test.run_deck()
-    #test.get_calculated_values()
-    #print(test.k, test.kerr, test.betas)
+    test.get_calculated_values()
+    print(test.k, test.kerr)
 
     
 
