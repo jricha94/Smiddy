@@ -461,28 +461,31 @@ class serpDeck(object):
            
             %_______mass flow definitions______
 
-            %mflow U_in
-            %all {self.rep_rate}
 
-            %mflow offgasratecore
-            %Ne 1e-2
-            %Ar 1e-2
-            %He 1e-2
-            %Kr 1e-2
-            %Xe 1e-2
-            %Rn 1e-2
+            set pcc 0 %predictor-corrector must be turned off to use depletion
+            
+            mflow U_in
+            all {self.rep_rate}
 
-            %% need to account for the increase in vloume with refueling
-            %mflow over
-            %all {self.re_rep}
+            mflow offgasratecore
+            Ne 1e-2
+            Ar 1e-2
+            He 1e-2
+            Kr 1e-2
+            Xe 1e-2
+            Rn 1e-2
 
-            %rep source_rep
-            %rc fuelsalt_rep fuelsalt U_in 0
-            %rc fuelsalt offgas offgasratecore 1
-            %rc fuelsalt overflow over 1
+            % need to account for the increase in vloume with refueling
+            mflow over
+            all {self.re_rep}
+
+            rep source_rep
+            rc fuelsalt_rep fuelsalt U_in 0
+            rc fuelsalt offgas offgasratecore 1
+            rc fuelsalt overflow over 1
 
             dep
-            %pro source_rep
+            pro source_rep
             daystep
             0.0208 0.0208 7 %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
             %7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
