@@ -16,23 +16,40 @@ def rho(k:float) -> float:
 class burn(object):
     '''
     '''
-    def __init__(self, salt='flibe'):
+    def __init__(self, salt='flibe', rep_salt='flibe'):
 
         self.salt:str       = salt      # salt key
+        self.rep_salt:str   = rep_salt  #reprocessing salt key
         self.rho_tgt:float  = 200.0     # target rho [pcm]
         self.rho_eps:float  = 200.0     # epsilon rho [pcm]
         self.enr_eps:float  = 1e-9      # epsilon enrichment
-        self.burn_path:str       = os.getcwd() + '/burn'   # path to run model
         self.RhoData = namedtuple("rhoData", 'enr rho rho_err')
         self.rholist = []
         #iteration constants
+        self.iter_path:str  = os.getcwd() + '/k_iter'   # path to run model
         self.enr_min:float  = 0.007     # minimum enrichment
         self.enr_max:float  = 0.25       # maximum enrichment
         self.iter_max:int   = 20        # maximum number of iterations
         self.conv_enr:float = None      # converged enrichment
         self.conv_rho:float = None      # converged rho
         self.conv_rhoerr:float = None   # converged rho error
+        #reprocessing constants
+        self.rep_path:str   = os.getcwd() + '/rep'
+        self.e0:float       = 0.021
+        self.rep_e:str      = 0.05
+        self.k_diff:float   = 1.0
+        self.min_k_diff:float = 0.00665
+        self.max_run:int    = 12
+        self.rep_rate:float =  1e-9
+        self.rep_upper:float= 1e-7
+        self.rep_lower:float = 1e-10
+        #feedback constants
+        self.feed_path:str  = os.getcwd() + '/feedback' 
+        self.burn_temps:list= [850.0, 900.0, 950.0]
+        self.base_temp:float= 900.0
 
+
+        
 
     def iterate_rho(self) -> bool:
         #Create edge cases
@@ -46,19 +63,15 @@ class burn(object):
         while rho0 > 0.0 or rho1 < 0.0:
             # Set up lattices
             lat0 = serpDeck(fuel=self.salt, e=enr0)
-            lat0.deck_path = self.burn_path + '/lat0'
+            lat0.deck_path = self.iter_path + '/lat0'
             lat0.deck_name = 'lat0_deck'
             lat1 = serpDeck(fuel=self.salt, e=enr1)
-            lat1.deck_path = self.burn_path + '/lat1'
+            lat1.deck_path = self.iter_path + '/lat1'
             lat1.deck_name = 'lat1_deck'
             # run lat 0
-            lat0.save_deck()
-            lat0.save_qsub_file()
-            lat0.run_deck()
+            lat0.full_build_run()
             # run lat 1
-            lat1.save_deck()
-            lat1.save_qsub_file()
-            lat1.run_deck()
+            lat1.full_build_run()
 
             is_done = False
             while not is_done:
@@ -95,7 +108,7 @@ class burn(object):
         enri:float = None
         rhoi:float = None
         rhoierr:float = None
-        os.chdir(self.burn_path)
+        os.chdir(self.iter_path)
         while n_iter < self.iter_max:
             n_iter += 1
             print(n_iter)
@@ -108,14 +121,12 @@ class burn(object):
 
             if abs(enr1-enr0) < self.enr_eps*abs(enr1+enr0):
                 break  # Enrichments close, done!
-            os.chdir(self.burn_path)
+            os.chdir(self.iter_path)
             mylat = serpDeck(fuel=self.salt, e=enri)
-            mylat.deck_path = self.burn_path + '/mylat'
+            mylat.deck_path = self.iter_path + '/mylat'
             mylat.deck_name = 'mylat_deck'
 
-            mylat.save_deck()
-            mylat.save_qsub_file()
-            mylat.run_deck()
+            mylat.full_build_run()
 
             while not mylat.get_calculated_values():
                 time.sleep(SLEEP_SEC)
@@ -160,7 +171,7 @@ class burn(object):
         plt.xlabel("Enrichment")
         plt.ylabel("Reactivity [pcm]")
         plt.grid(True)
-        plt.savefig(self.burn_path + '/' + plot_name, bbox_inches='tight')
+        plt.savefig(self.iter_path + '/' + plot_name, bbox_inches='tight')
         plt.close()
 
     def save_iters(self, save_file:str='converge_data.txt'):
@@ -173,20 +184,63 @@ class burn(object):
             result += '%10.8f\t%10.2f\t%6.1f\n' % (r)
 
         try:
-            fh = open(self.burn_path + '/' + save_file, 'w')
+            fh = open(self.iter_path + '/' + save_file, 'w')
             fh.write(result)
             fh.close()
         except IOError as e:
             print("[ERROR] Unable to write to file: ",
-                  self.burn_path + '/' + save_file)
+                  self.iter_path + '/' + save_file)
             print(e)
-        
+
+    def get_rep_rate(self, recalc:bool=False, cleanup:bool=False) -> bool:
+        run = 0
+        while self.k_diff > self.min_k_diff and run < self.max_run:
+            lat = serpDeck(self.salt, self.e0, self.salt, self.rep_e, True)
+            lat.deck_path = self.rep_path + '/rep' + str(run)
+            lat.rep_rate = self.rep_rate
+            lat.re_rep   = self.rep_rate
+            lat.full_build_run()
+
+            is_done = False
+            while not is_done:
+                if lat.get_burnup_values():
+                    is_done = True
+            
+            if cleanup:
+                lat.cleanup()
+
+            start_k = lat.burnup_k[0][0]
+            end_k   = lat.burnup_k[-1][0]
+            self.k_diff = abs(start_k-end_k)
+
+            if end_k > start_k:
+                old_rep  = self.rep_rate
+                self.rep_rate = (old_rep+self.rep_lower)/2.0
+                self.rep_upper = old_rep
+            else:
+                old_rep = self.rep_rate
+                self.rep_rate = (old_rep+self.rep_upper)/2.0
+                self.rep_lower = old_rep
+            run += 1
+        return True
+
+    def get_feedbacks(self,feedback:str='fs.dopp', recalc:bool=False, cleanup:bool=False) -> bool:
+        '''
+        fs.dopp = fuelsalt doppler feedback
+        gr.dopp = graphite doppler feedback
+
+        '''
+        if feedback == 'fs.dopp':
+            pass
+
+
+
 if __name__ == '__main__':
-    test = burn('thorConSalt')
-    test.iterate_rho()
-    print(test.conv_enr, test.conv_rho)
-    test.plot_iters()
-    test.save_iters()
+    test = burn('flibe')
+    #test.get_rep_rate()
+    fh = open('out.txt', 'w')
+    fh.write(str(test.rep_rate))
+    fh.close()
 
 
             

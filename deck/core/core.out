@@ -1141,8 +1141,8 @@ Material "graphite":
  - Material is included in geometry
  - Atom density 9.03621E-02 1/barn*cm
  - Mass density 1.80079E+00 g/cm3
- - Volume 7.90096E+07 cm3
- - Mass 1.42280E+08 g
+ - Volume 7.90342E+07 cm3
+ - Mass 1.42324E+08 g
  - Photon emission rate 0.00000E+00 1/s
  - Neutron emission rate 0.00000E+00 1/s
  - 3 nuclides in composition
@@ -1166,8 +1166,8 @@ Material "natb4c":
  - Material is included in geometry
  - Atom density 1.31785E-01 1/barn*cm
  - Mass density 2.41800E+00 g/cm3
- - Volume 5.67992E+06 cm3
- - Mass 1.37340E+07 g
+ - Volume 5.65134E+06 cm3
+ - Mass 1.36649E+07 g
  - Photon emission rate 0.00000E+00 1/s
  - Neutron emission rate 0.00000E+00 1/s
  - 3 nuclides in composition
@@ -1191,8 +1191,8 @@ Material "fuelsalt":
  - Material is included in geometry
  - Atom density 6.47103E-02 1/barn*cm
  - Mass density 3.23461E+00 g/cm3
- - Volume 4.97394E+06 cm3
- - Mass 1.60888E+07 g
+ - Volume 4.95858E+06 cm3
+ - Mass 1.60391E+07 g
  - Photon emission rate 0.00000E+00 1/s
  - Neutron emission rate 0.00000E+00 1/s
  - 8 nuclides in composition

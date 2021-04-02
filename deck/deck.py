@@ -39,23 +39,6 @@ def makePlane(point1:list, point2:list, planeName:str) -> str:
     planeInput= f'''\nsurf {planeName} plane {x1} {y1} {z1} {x2} {y2} {z2} {x3} {y3} {z3}'''
     return planeInput
 
-def graphiteLinearExpansion(point = None, tempK:float = 293.0) -> list:
-    if type(point) is list: 
-        x0, y0 = point[0], point[1]
-        xf = x0 * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
-        yf = y0 * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
-        result = [xf, yf]
-    else:
-        pf = point * (1.0 + GRAPHITE_CTE * (tempK - 293.0))
-        result = pf
-    return result
-
-def graphiteDensityExpansion(tempK:float=950.0) -> float:
-    'Return new density based on graphite thermal expansion'
-    unit_f  = (1.0 + GRAPHITE_CTE * (tempK - 950.0))
-    rho_f   = GRAPHITE_RHO / unit_f**3
-    return rho_f
-
 def rotateAndTranslate(point:list, rotation:float, deltaX:float, deltaY:float):
     '''rotates a 2D point around 0,0 and then translates it
     Inputs:
@@ -108,6 +91,7 @@ class serpDeck(object):
         self.gr_tempK:float  = 908.15                       # Graphite temperature
         self.gr_dens:float   = 1.80                           # Graphite density at 950 K [g/cm3]
         self.boron_graphite:float = 2e-06     # 2ppm boron in graphite
+        self.room_temp:float = 293.0
 
         self.k:float    = None                  # k-effective for model
         self.kerr:float = None                  # k-eff error
@@ -121,7 +105,7 @@ class serpDeck(object):
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'fill'     # NEcluster torque queue
+        self.queue:str     = 'local'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
         self.deck_name:str = inputName  # Serpent input file name
@@ -132,8 +116,8 @@ class serpDeck(object):
 
         self.reprocess:bool = reprocess
         self.vol:int = 5468000 if self.reprocess else None
-        self.rep_rate:int  = 1e-9           #Reprocessing Rate
-        self.re_rep:int    = 1e-9           #Refuel rep rate
+        self.rep_rate:float  = 1e-9           #Reprocessing Rate
+        self.re_rep:float    = 1e-9           #Refuel rep rate
 
 
 
@@ -182,11 +166,24 @@ class serpDeck(object):
         self.plenum_height:float = 2.0                      # cm - height of the top and bottom plenums
 
 
+    def graphiteLinearExpansion(self, point = None, tempK:float = 293.0) -> list:
+        if type(point) is list: 
+            x0, y0 = point[0], point[1]
+            xf = x0 * (1.0 + GRAPHITE_CTE * (tempK - self.room_temp))
+            yf = y0 * (1.0 + GRAPHITE_CTE * (tempK - self.room_temp))
+            result = [xf, yf]
+        else:
+            pf = point * (1.0 + GRAPHITE_CTE * (tempK - self.room_temp))
+            result = pf
+        return result
 
+    def graphiteDensityExpansion(self, tempK:float=950.0) -> float:
+        'Return new density based on graphite thermal expansion'
+        unit_f  = (1.0 + GRAPHITE_CTE * (tempK - 950.0))
+        rho_f   = GRAPHITE_RHO / unit_f**3
+        return rho_f
 
-    
     def makeDarkMod(self, rotation:float = 0.0, deltaX:float = 0.0, deltaY:float = 0.0, cellName:str = '999', cellUni:str = '0', cellMat:str = 'graphite') -> str:
-        #TODO add top and bottom planes, add uni and mat to cell
         '''Creates dark moderator cell; rotation applied first, then translation
          Inputs:
             rotation: amount in degrees of counter clockwise rotation
@@ -201,7 +198,7 @@ class serpDeck(object):
         localDarkPoints = copy.copy(self.darkPoints)                               #Copy points to this module so we dont have to overwrite them
 
         for point in localDarkPoints:
-            localDarkPoints[point] = graphiteLinearExpansion(localDarkPoints[point], self.gr_tempK)
+            localDarkPoints[point] = self.graphiteLinearExpansion(localDarkPoints[point], self.gr_tempK)
         
         if rotation == 0.0 and deltaX == 0.0 and deltaY == 0.0:         #Move points to desired location if change is applied
             pass
@@ -241,7 +238,7 @@ class serpDeck(object):
         localLightPoints = copy.copy(self.lightPoints)
 
         for point in localLightPoints:
-            localLightPoints[point] = graphiteLinearExpansion(localLightPoints[point], self.gr_tempK)
+            localLightPoints[point] = self.graphiteLinearExpansion(localLightPoints[point], self.gr_tempK)
 
         if rotation == 0.0 and deltaX == 0.0 and deltaY == 0.0:         #Move points to desired location if change is applied
             pass
@@ -279,12 +276,12 @@ class serpDeck(object):
     def makeLog(self) -> str:
         cellList = [#List of dark and light moderators, d=dark, l=light
         #type rotation               dX                                                    dY                                      name
-        ['d', 0.0,      graphiteLinearExpansion(0.0, self.gr_tempK),       graphiteLinearExpansion(-0.2656, self.gr_tempK),        'd1'],
-        ['d',-120.0,    graphiteLinearExpansion(-0.23, self.gr_tempK),     graphiteLinearExpansion(0.1328, self.gr_tempK),         'd2'],
-        ['l', 0.0,      graphiteLinearExpansion(-2.0, self.gr_tempK),      graphiteLinearExpansion(-0.69871, self.gr_tempK),       'l1'],
-        ['l', 0.0,      graphiteLinearExpansion(-6.4, self.gr_tempK),      graphiteLinearExpansion(1.8539, self.gr_tempK),         'l2'],
-        ['l', 0.0,      graphiteLinearExpansion(-10.8, self.gr_tempK),     graphiteLinearExpansion(4.3595, self.gr_tempK),         'l3'],
-        ['l', 0.0,      graphiteLinearExpansion(-15.2, self.gr_tempK),     graphiteLinearExpansion(6.9069, self.gr_tempK),         'l4']
+        ['d', 0.0,      self.graphiteLinearExpansion(0.0, self.gr_tempK),       self.graphiteLinearExpansion(-0.2656, self.gr_tempK),        'd1'],
+        ['d',-120.0,    self.graphiteLinearExpansion(-0.23, self.gr_tempK),     self.graphiteLinearExpansion(0.1328, self.gr_tempK),         'd2'],
+        ['l', 0.0,      self.graphiteLinearExpansion(-2.0, self.gr_tempK),      self.graphiteLinearExpansion(-0.69871, self.gr_tempK),       'l1'],
+        ['l', 0.0,      self.graphiteLinearExpansion(-6.4, self.gr_tempK),      self.graphiteLinearExpansion(1.8539, self.gr_tempK),         'l2'],
+        ['l', 0.0,      self.graphiteLinearExpansion(-10.8, self.gr_tempK),     self.graphiteLinearExpansion(4.3595, self.gr_tempK),         'l3'],
+        ['l', 0.0,      self.graphiteLinearExpansion(-15.2, self.gr_tempK),     self.graphiteLinearExpansion(6.9069, self.gr_tempK),         'l4']
         ]
 
         surfs =     '\n\n%____________________Surfaces____________________'
@@ -318,12 +315,12 @@ class serpDeck(object):
         half_height:float = self.log_height/2 + self.plenum_height + self.log_hat_height
         half_core:float = self.log_height/2.0
         #Make surfs for pot
-        surfs += f'\n%outer wall for the pot\nsurf pot cyl 0.0 0.0 {self.potRadius} -{graphiteLinearExpansion(half_height, self.gr_tempK)} {graphiteLinearExpansion(half_height, self.gr_tempK)}'
+        surfs += f'\n%outer wall for the pot\nsurf pot cyl 0.0 0.0 {self.potRadius} -{self.graphiteLinearExpansion(half_height, self.gr_tempK)} {self.graphiteLinearExpansion(half_height, self.gr_tempK)}'
         surfs += f'\n%inner wall of shield\nsurf inShield cyl 0.0 0.0 {self.potRadius-self.shieldThickness}'
-        surfs += f'\n%top of the core\nsurf topCore pz {graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
-        surfs += f'\b%top salt plenum\nsurf topPlenum pz {graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
-        surfs += f'\n%bottom of the core\nsurf botCore pz -{graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
-        surfs += f'\n%bottom salt plenum\n surf botPlenum pz -{graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
+        surfs += f'\n%top of the core\nsurf topCore pz {self.graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
+        surfs += f'\b%top salt plenum\nsurf topPlenum pz {self.graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
+        surfs += f'\n%bottom of the core\nsurf botCore pz -{self.graphiteLinearExpansion(self.log_height/2.0, self.gr_tempK)}'
+        surfs += f'\n%bottom salt plenum\n surf botPlenum pz -{self.graphiteLinearExpansion(half_core+self.plenum_height, self.gr_tempK)}'
 
         cells += '\n%Void\ncell 999 0 outside pot'
         cells += '\n%B4C Shield\ncell B4CShield 0 natb4c -pot inShield -topCore botCore'
@@ -332,9 +329,9 @@ class serpDeck(object):
         cells += '\n%bottom salt plenum\n cell botSalt 0 fuelsalt -pot -botCore botPlenum'
         cells += '\n%bottom reflector\ncell botRef 0 graphite -pot -botPlenum'        
 
-        latticePitch = graphiteLinearExpansion(self.latticePitch, self.gr_tempK) * 2.0 - 0.001
+        latticePitch = self.graphiteLinearExpansion(self.latticePitch, self.gr_tempK) * 2.0 - 0.001
 
-        surfs += f'%graphite for outside reflector\nsurf sHEX1 hexxc 0.0 0.0 {graphiteLinearExpansion(self.latticePitch, self.gr_tempK)}'
+        surfs += f'%graphite for outside reflector\nsurf sHEX1 hexxc 0.0 0.0 {self.graphiteLinearExpansion(self.latticePitch, self.gr_tempK)}'
         cells += f'%graphite reflector shield cell\ncell reflector 3 graphite -sHEX1'
 
         cells += dedent(f'''
@@ -376,7 +373,7 @@ class serpDeck(object):
         # Graphite material definition
         mats += dedent(f'''\n
             % Graphite Moderator
-             mat graphite -{str(graphiteDensityExpansion(self.gr_tempK))} moder graph 6000
+             mat graphite -{str(self.graphiteDensityExpansion(self.gr_tempK))} moder graph 6000
              rgb 130 130 130
              6000.{self.gr_lib} {grFrac}
              5010.{self.gr_lib} {b10Frac}
@@ -607,6 +604,11 @@ class serpDeck(object):
         else:               # Submit the job on the cluster
             os.system('cd ' + self.deck_path + f' && qsub {self.qsub_name}')
 
+    def full_build_run(self):
+        self.save_deck()
+        self.save_qsub_file()
+        self.run_deck()
+
     def cleanup(self, purge:bool=True):
         'Delete the run directory'
         if os.path.isdir(self.deck_path):
@@ -622,16 +624,9 @@ class serpDeck(object):
 
 
 if __name__ == '__main__':
-    test = serpDeck(reprocess = True)
+    test = serpDeck(reprocess = False)
     test.cleanup()
-    test.save_deck()
-    test.save_qsub_file()
-    #test.run_deck()
-    test.run_deck()
-    test.get_burnup_values()
-    print(test.burnup_k)
-    print(test.burn_days)
-
+    test.full_build_run()
     
 
     
