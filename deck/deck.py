@@ -79,7 +79,6 @@ class serpDeck(object):
            ValueError("Salt "+fuel+" is undefined.")
 
 
-        self.inputName       = 'core'
         self.e               = e
         self.salt_name       = fuel                               # Default salt
         self.s               = Salt(self.salt_formula, e)
@@ -107,7 +106,7 @@ class serpDeck(object):
         self.queue:str     = 'local'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
-        self.deck_name:str = inputName  # Serpent input file name
+        self.deck_name:str = 'core'  # Serpent input file name
         self.qsub_name:str = 'run.sh' #name for shell file to run serpent
         self.deck_path:str = os.getcwd() + f'/{self.deck_name}'        # Where to run the lattice deck
         self.main_path:str = os.path.expanduser('~/L/')+fuel # Main path
@@ -625,7 +624,8 @@ class serpDeck(object):
 if __name__ == '__main__':
     test = serpDeck(reprocess = False)
     test.cleanup()
-    test.full_build_run()
+    test.save_deck()
+    #test.full_build_run()
     
 
     
