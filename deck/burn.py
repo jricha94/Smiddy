@@ -237,7 +237,7 @@ class burn(object):
 
 if __name__ == '__main__':
     test = burn('flibe')
-    #test.get_rep_rate()
+    test.get_rep_rate()
     fh = open('out.txt', 'w')
     fh.write(str(test.rep_rate))
     fh.close()
