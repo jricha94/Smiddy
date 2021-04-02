@@ -65,9 +65,8 @@ class serpDeck(object):
 
     def __init__(self, 
     fuel:str         = 'thorConSalt',                         
-    refuel:str       = 'thorCons_ref',                       # Salt used in refueling
-    inputName:str    = 'core',                             # Input file name
     e:float          = 0.17,                                # Enrichment of Uranium in fuel
+    refuel:str       = 'thorCons_ref',                       # Salt used in refueling
     e_ref:float      = 0.20,                                # Enrichment of Uranium in fuel used for refueling
     reprocess:bool   = False
     ):  
@@ -80,7 +79,7 @@ class serpDeck(object):
            ValueError("Salt "+fuel+" is undefined.")
 
 
-        self.inputName = inputName
+        self.inputName       = 'core'
         self.e               = e
         self.salt_name       = fuel                               # Default salt
         self.s               = Salt(self.salt_formula, e)
