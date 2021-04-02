@@ -113,11 +113,15 @@ class serpDeck(object):
         self.kerr:float = None                  # k-eff error
         self.betas:list = None                  # delayed neutron fractions
         self.ngt:float  = None                  # neutron generation time [s^-1]
+        # Burnup values
+        self.burnup_k   = None                  # k-eff for burnup
+        self.burn_days  = None                  # burn days 
+        
 
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'local'     # NEcluster torque queue
+        self.queue:str     = 'fill'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
         self.deck_name:str = inputName  # Serpent input file name
@@ -532,14 +536,28 @@ class serpDeck(object):
                 continue
 
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
-        if self.reprocess:
-            self.k     = results.resdata["anaKeff"][-1][0]
-            self.kerr  = results.resdata["anaKeff"][-1][1]
-            self.betas = results.resdata["anaKeff"]
-        else:
-            self.k     = results.resdata["anaKeff"][0]
-            self.kerr  = results.resdata["anaKeff"][1]
-            self.betas = results.resdata["anaKeff"]
+        self.k     = results.resdata["anaKeff"][0]
+        self.kerr  = results.resdata["anaKeff"][1]
+        return True
+
+    def get_burnup_values(self) -> bool:
+        is_done = False
+        while not is_done:
+            time.sleep(10)          #Wait for serpent
+            if os.path.exists(self.deck_path+'/done.out') and \
+                os.path.getsize(self.deck_path+'/done.out') > 30:
+                is_done = True
+                break
+            else:                   # Calculation not done yet
+                continue
+        results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
+        burn_results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_dep.m")
+
+        self.burnup_k  = []
+        self.burn_days = []
+        for value, day in zip(results.resdata['anaKeff'], burn_results.days):
+            self.burnup_k.append((value[0], value[1]))
+            self.burn_days.append(day)
         return True
 
     def save_deck(self):
@@ -610,9 +628,9 @@ if __name__ == '__main__':
     test.save_qsub_file()
     #test.run_deck()
     test.run_deck()
-    test.get_calculated_values()
-    print(test.k, test.kerr)
-    print(test.betas)
+    test.get_burnup_values()
+    print(test.burnup_k)
+    print(test.burn_days)
 
     
 
