@@ -196,10 +196,10 @@ class burn(object):
                   self.iter_path + '/' + save_file)
             print(e)
 
-    def get_rep_rate(self, cleanup:bool=False) -> bool:
+    def get_rep_rate(self, recalc:bool=False, cleanup:bool=False) -> bool:
         run = 0
         while self.k_diff > self.min_k_diff and run < self.max_run:
-            lat = serpDeck(self.salt, self.e0, self.rep_salt, self.rep_e, True)
+            lat = serpDeck(self.salt, self.e0, self.salt, self.rep_e, True)
             lat.deck_path = self.rep_path + '/rep' + str(run)
             lat.rep_rate = self.rep_rate   # tons of heavy metal per year ?
             lat.re_rep   = self.rep_rate
@@ -241,8 +241,6 @@ class burn(object):
             mylat = self.fb_lats[fb_lat_name]
             mylat.deck_path = self.feed_path + '/' + fb_lat_name
             mylat.deck_name = fb_lat_name
-            mylat.rep_rate  = self.rep_rate
-            mylat.re_rep    = self.rep_rate
             if recalc or not mylat.get_burnup_values():
                 if feedback == 'fs.dopp':
                     mylat.gr_tempK  = self.base_temp + 50.0
