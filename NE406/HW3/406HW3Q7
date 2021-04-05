@@ -1,0 +1,31 @@
+c Jarod Richardson
+c NE406 homework 3
+c Question 7
+c
+c
+c Cell Cards
+ 1   3   -1.873   -1      imp:p=1   $Cs137
+ 2   2   -0.97     1 -2   imp:p=1   $PolyE
+ 3   1   -1        2 -3   imp:p=1   $Tissue
+ 4   0             3      imp:p=0   $Void
+
+c Surface Cards
+c Inner wall
+ 1   rcc 0.0 0.0 0.2   0.0 0.0  9.8   0.49
+c Outer wall
+ 2   rcc 0.0 0.0 0.0   0.0 0.0 10.0   0.69
+c Tissue
+ 3   rcc 0.0 0.0 0.0   0.0 0.0 10.0   1.69
+c Surface in tissue for scoring
+ 4   rcc 0.0 0.0 0.0   0.0 0.0 10.0   0.70
+
+c Data Cards 
+ m1   1001   2   8016   2   $tissue
+ m2   6012   2   1001   4   $polyethylene
+ m3   55137  1              $Cs137
+ mode p
+ nps  1e5
+ sdef cel=1 erg=0.661 par=p
+ f2:p 4
+ de2   0.661
+ df2   iu=2   ic=10         $Sv/hr/source particle
