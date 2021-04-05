@@ -45,8 +45,9 @@ class burn(object):
         self.rep_lower:float = 1e-10
         #feedback constants
         self.feed_path:str  = os.getcwd() + '/feedback' 
-        self.burn_temps:list= [850.0, 900.0, 950.0]
+        self.feedback_temps:list= [850.0, 900.0, 950.0]
         self.base_temp:float= 900.0
+        self.fb_lats:dict = {}
 
 
         
@@ -224,14 +225,30 @@ class burn(object):
             run += 1
         return True
 
-    def get_feedbacks(self,feedback:str='fs.dopp', recalc:bool=False, cleanup:bool=False) -> bool:
+    def run_feedbacks(self,feedback:str='fs.dopp', recalc:bool=False, cleanup:bool=False) -> bool:
         '''
         fs.dopp = fuelsalt doppler feedback
         gr.dopp = graphite doppler feedback
-
+        both    = fuel and graphite doppler
         '''
-        if feedback == 'fs.dopp':
-            pass
+        for t in self.feedback_temps:
+            fb_lat_name = 'fb_core.' + str(t)
+            self.fb_lats[fb_lat_name] = serpDeck(self.salt, self.e0, self.salt, self.rep_e, True)
+            mylat = self.lats[fb_lat_name]
+            if feedback == 'fs.dopp':
+                mylat.gr_tempK  = self.base_temp + 50.0
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t
+            if feedback == 'gr.dopp':
+                mylat.gr_tempK  = t
+                mylat.mat_tempK = self.base_temp
+                mylat.fs_tempK  = self.base_temp 
+            if feedback == 'both':
+                mylat.gr_tempK  = t
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t                
+            else:
+                print('ERROR: feedback type does not exist') 
 
 
 
