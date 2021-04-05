@@ -15,7 +15,7 @@ results.write('crit e: ' + str(test.conv_enr)+'\n\n')
 
 
 test.e0 = test.conv_enr     # change enrichment to one found in crit seach 
-test.rep_e = 19.75          # set repr enrichment
+test.rep_e = 0.1975          # set repr enrichment
 
 test.get_rep_rate(True)     # finds the reprocessing rate
 
