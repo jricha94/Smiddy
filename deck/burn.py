@@ -304,7 +304,7 @@ class burn(object):
 
 if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
-    test.run_feedbacks()
+    test.run_feedbacks(feedback='fs.dopp',recalc=True)
     test.read_feedbacks()
     print(test.rhos)
     print(test.alphas)
