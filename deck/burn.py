@@ -343,7 +343,7 @@ class burn(object):
 
 if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
-    test.run_feedbacks(feedback='fs.dopp',recalc=False)
+    test.run_feedbacks(feedback='fs.dopp',recalc=True)
     test.read_feedbacks()
     test.plot_feedback_rho(pos=0,plot_name='rhoFirstDay.png')
     test.plot_feedback_rho(pos=-1,plot_name='rhoLastDay.png')
