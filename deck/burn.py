@@ -296,7 +296,7 @@ class burn(object):
         
         # get alpha list
         for i in range(len(self.alphas)):
-            alpha, _ = np.polyfit(self.feedback_temps, self.rhos[i][1])
+            alpha, _ = np.polyfit(self.feedback_temps, self.rhos[i][1], 1)
             self.alphas[i].append(alpha)
         
 
@@ -304,7 +304,7 @@ class burn(object):
 
 if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
-    test.run_feedbacks(feedback='fs.dopp',recalc=True)
+    test.run_feedbacks(feedback='fs.dopp',recalc=False)
     test.read_feedbacks()
     print(test.rhos)
     print(test.alphas)
