@@ -308,8 +308,12 @@ if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
     test.run_feedbacks(feedback='fs.dopp',recalc=False)
     test.read_feedbacks()
-    print(test.rhos)
-    print(test.alphas)
+    print('rhos:\n')
+    for rho in test.rhos:
+        print(rho)
+    print('\n\n\nAlphas:\n')
+    for alpha in test.alphas:
+        print(alpha)
 
 
 
