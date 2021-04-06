@@ -37,7 +37,7 @@ class burn(object):
         #reprocessing constants
         self.rep_path:str   = os.getcwd() + '/rep'
         self.e0:float       = 0.021
-        self.rep_e:str      = 0.05
+        self.rep_e:str      = 0.1975
         self.k_diff:float   = 1.0
         self.min_k_diff:float = 0.00665
         self.max_run:int    = 12
@@ -196,10 +196,10 @@ class burn(object):
                   self.iter_path + '/' + save_file)
             print(e)
 
-    def get_rep_rate(self, recalc:bool=False, cleanup:bool=False) -> bool:
+    def get_rep_rate(self, cleanup:bool=False) -> bool:
         run = 0
         while self.k_diff > self.min_k_diff and run < self.max_run:
-            lat = serpDeck(self.salt, self.e0, self.salt, self.rep_e, True)
+            lat = serpDeck(self.salt, self.e0, self.rep_salt, self.rep_e, True)
             lat.deck_path = self.rep_path + '/rep' + str(run)
             lat.rep_rate = self.rep_rate   # tons of heavy metal per year ?
             lat.re_rep   = self.rep_rate
@@ -209,6 +209,7 @@ class burn(object):
             while not is_done:
                 if lat.get_burnup_values():
                     is_done = True
+                time.sleep(SLEEP_SEC)
             
             if cleanup:
                 lat.cleanup()
@@ -241,24 +242,32 @@ class burn(object):
             mylat = self.fb_lats[fb_lat_name]
             mylat.deck_path = self.feed_path + '/' + fb_lat_name
             mylat.deck_name = fb_lat_name
+            mylat.rep_rate  = self.rep_rate
+            mylat.re_rep    = self.rep_rate
+
+            if feedback == 'fs.dopp':
+                mylat.gr_tempK  = self.base_temp + 50.0
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t
+            elif feedback == 'gr.dopp':
+                mylat.gr_tempK  = t + 50.0
+                mylat.mat_tempK = self.base_temp
+                mylat.fs_tempK  = self.base_temp 
+            elif feedback == 'both':
+                mylat.gr_tempK  = t + 50.0
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t                
+            else:
+                print('ERROR: feedback type does not exist')
+            
+            if mylat.mat_tempK < 900.0:
+                mylat.lib = '06c'
+            if mylat.gr_tempK < 900.0:
+                mylat.gr_lib = '06c'
             if recalc or not mylat.get_burnup_values():
-                if feedback == 'fs.dopp':
-                    mylat.gr_tempK  = self.base_temp + 50.0
-                    mylat.mat_tempK = t
-                    mylat.fs_tempK  = t
-                if feedback == 'gr.dopp':
-                    mylat.gr_tempK  = t + 50.0
-                    mylat.mat_tempK = self.base_temp
-                    mylat.fs_tempK  = self.base_temp 
-                if feedback == 'both':
-                    mylat.gr_tempK  = t + 50.0
-                    mylat.mat_tempK = t
-                    mylat.fs_tempK  = t                
-                else:
-                    print('ERROR: feedback type does not exist')
                 mylat.full_build_run()
         
-    def read_feedbacks(self, feedback:str = 'fs.dopp'):
+    def read_feedbacks(self, feedback:str = 'fs.dopp', cleanup:bool=False):
         while True:         # Wait for all cases to finish
             is_done = True
             for t in self.feedback_temps:
@@ -289,19 +298,56 @@ class burn(object):
         
         # get alpha list
         for i in range(len(self.alphas)):
-            alpha, _ = np.polyfit(self.feedback_temps, self.rhos[i][1])
+            alpha, _ = np.polyfit(self.feedback_temps, self.rhos[i][1], 1)
             self.alphas[i].append(alpha)
+
+        if cleanup:
+            for t in self.feedback_temps:
+                fb_lat_name = feedback + '.' + str(int(t))
+                self.fb_lats[fb_lat_name].cleanup()
         
+    def plot_feedback_rho(self, pos:int=0, plot_name:str='RhovTemp.png'):
+        if not self.rhos:
+            print('Warning: nothing to plot')
+            return
+        if pos > len(self.rhos):
+            print('Not a valid position')
+        xvals = self.feedback_temps
+        yvals = self.rhos[pos][1]
+        yerrs = self.rhos[pos][2]
+
+        plt.errorbar(x=xvals, y=yvals, yerr=yerrs, ls='', marker='.')
+        plt.title(f'Reactivity vs Temperature [{self.rhos[pos][0]} days')
+        plt.xlabel("Temperature [k]")
+        plt.ylabel("Reactivity [pcm]")
+        plt.savefig(self.feed_path + '/' + plot_name, bbox_inches='tight')
+        plt.close()        
+
+    def plot_feedback_alphas(self, plot_name:str='AlphavDays'):
+        if not self.alphas:
+            print('Warning: nothing to plot')
+            return
+        xvals = self.alphas[0]
+        yvals = self.alphas[1]
+
+        plt.plot(xvals, yvals, ls='', marker='.')
+        plt.title(f'Doppler feedback vs Time')
+        plt.xlabel("Time [d]")
+        plt.ylabel("Alpha [pcm/dk]")
+        plt.savefig(self.feed_path + '/' + plot_name, bbox_inches='tight')
+        plt.close()        
+      
 
 
 
 
 if __name__ == '__main__':
-    test = burn('flibe')
-    test.get_rep_rate()
-    fh = open('out.txt', 'w')
-    fh.write(str(test.rep_rate))
-    fh.close()
+    test = burn('thorConSalt', 'thorConSalt')
+    test.run_feedbacks(feedback='fs.dopp',recalc=True)
+    test.read_feedbacks()
+    test.plot_feedback_rho(pos=0,plot_name='rhoFirstDay.png')
+    test.plot_feedback_rho(pos=-1,plot_name='rhoLastDay.png')
+    test.plot_feedback_alphas()
 
 
             
