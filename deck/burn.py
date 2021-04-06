@@ -330,7 +330,7 @@ class burn(object):
         xvals = self.alphas[0]
         yvals = self.alphas[1]
 
-        plt.plot(x=xvals, y=yvals, ls='', marker='.')
+        plt.plot(xvals, yvals, ls='', marker='.')
         plt.title(f'Doppler feedback vs Time')
         plt.xlabel("Time [d]")
         plt.ylabel("Alpha [pcm/dk]")
