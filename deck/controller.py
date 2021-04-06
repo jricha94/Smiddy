@@ -1,28 +1,16 @@
 #!/usr/bin/env/python3
 from burn import burn
 
-results = open('results.txt','w')
-
 test = burn(salt='thorConSalt', rep_salt='thorConSalt')
 test.iterate_rho() #gets critical enrichment
-print('good')
 # 2 methods below arent important, just to store data
 test.plot_iters() #plots criticality search
 test.save_iters() # saves criticality search
 
-
-results.write('crit e: ' + str(test.conv_enr)+'\n\n')
-
-
 test.e0 = test.conv_enr     # change enrichment to one found in crit seach 
 test.rep_e = 0.1975          # set repr enrichment
 
-test.get_rep_rate(True)     # finds the reprocessing rate
-
-print('good')
-
-results.write('rep rate:' + str(test.rep_rate)+'\n\n')
-
+test.get_rep_rate(False)     # finds the reprocessing rate
 #Doppler Options:
 #fs.dopp   =    fuel salt doppler 
 #gr.dopp   =    graphite doppler
@@ -31,12 +19,7 @@ results.write('rep rate:' + str(test.rep_rate)+'\n\n')
 
 test.run_feedbacks(feedback='fs.dopp', recalc=True)     # Runs decks doppler feedback
 test.read_feedbacks(feedback='fs.dopp')                # Reads results from doppler feedback
+test.plot_feedback_rho(pos=0,plot_name='rhoFirstDay.png')
+test.plot_feedback_rho(pos=-1,plot_name='rhoLastDay.png')
+test.plot_feedback_alphas()
 
-print('done')
-
-results.write('rhos:\n' + str(test.rhos))
-results.write('\n\nalphs:\n' + str(test.alphas))
-
-
-
-results.close()
