@@ -267,7 +267,7 @@ class burn(object):
             if recalc or not mylat.get_burnup_values():
                 mylat.full_build_run()
         
-    def read_feedbacks(self, feedback:str = 'fs.dopp'):
+    def read_feedbacks(self, feedback:str = 'fs.dopp', cleanup:bool=False):
         while True:         # Wait for all cases to finish
             is_done = True
             for t in self.feedback_temps:
@@ -300,7 +300,44 @@ class burn(object):
         for i in range(len(self.alphas)):
             alpha, _ = np.polyfit(self.feedback_temps, self.rhos[i][1], 1)
             self.alphas[i].append(alpha)
+
+        if cleanup:
+            for t in self.feedback_temps:
+                fb_lat_name = feedback + '.' + str(int(t))
+                self.fb_lats[fb_lat_name].cleanup()
         
+    def plot_feedback_rho(self, pos:int=0, plot_name:str='RhovTemp.png'):
+        if not self.rhos:
+            print('Warning: nothing to plot')
+            return
+        if pos > len(self.rhos):
+            print('Not a valid position')
+        xvals = self.feedback_temps
+        yvals = self.rhos[pos][1]
+        yerrs = self.rhos[pos][2]
+
+        plt.errorbar(x=xvals, y=yvals, yerr=yerrs, ls='', marker='.')
+        plt.title(f'Reactivity vs Temperature [{self.rhos[pos][0]} days')
+        plt.xlabel("Temperature [k]")
+        plt.ylabel("Reactivity [pcm]")
+        plt.savefig(self.feed_path + '/' + plot_name, bbox_inches='tight')
+        plt.close()        
+
+    def plot_feedback_alphas(self, plot_name:str='AlphavDays'):
+        if not self.alphas:
+            print('Warning: nothing to plot')
+            return
+        xvals = self.alphas[0]
+        yvals = self.alphas[1]
+
+        plt.plot(x=xvals, y=yvals, ls='', marker='.')
+        plt.title(f'Doppler feedback vs Time')
+        plt.xlabel("Time [d]")
+        plt.ylabel("Alpha [pcm/dk]")
+        plt.savefig(self.feed_path + '/' + plot_name, bbox_inches='tight')
+        plt.close()        
+      
+
 
 
 
@@ -308,13 +345,9 @@ if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
     test.run_feedbacks(feedback='fs.dopp',recalc=False)
     test.read_feedbacks()
-    print('rhos:\n')
-    for rho in test.rhos:
-        print(rho)
-    print('\n\n\nAlphas:\n')
-    for alpha in test.alphas:
-        print(alpha)
-
+    test.plot_feedback_rho(pos=0,plot_name='rhoFirstDay.png')
+    test.plot_feedback_rho(pos=-1,plot_name='rhoLastDay.png')
+    test.plot_feedback_alphas()
 
 
             
