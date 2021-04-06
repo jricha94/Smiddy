@@ -157,13 +157,13 @@ cell core 0 fill univ_lat -inShield -pot -topCore botCore
 %____________________Material Definitions________
 
 % Graphite Moderator
- mat graphite -1.8 moder graph 6000
+ mat graphite -1.8 moder graph 6000 tms 950.0
  rgb 130 130 130
  6000.09c 0.999998
  5010.09c 4e-07
  5011.09c 1.6e-06
 % Thermal Scattering Library for Graphite
- therm graph 950.0 gre7.18t gre7.22t
+ therm graph 0 gre7.18t gre7.22t
 
 % Natural Boron
  mat boronmetal -2.3
@@ -189,17 +189,17 @@ cell core 0 fill univ_lat -inShield -pot -topCore botCore
 %  DENSITY: 54.19 E-6 g/cc
 mat he -54.19E-6
  rgb 255 245 213
- 2004.09c 1% Fuel salt: 76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4, U enrichment 0.19337955871487109
-mat fuelsalt  -3.20376086 rgb 240 30 30 tmp  950.000
+ 2004.09c 1% Fuel salt: 76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4, U enrichment 0.021
+mat fuelsalt  -3.20432528 rgb 240 30 30 tmp  950.000
 burn 1 vol 5468000
-  4009.09c  -0.014486817090    %  Be-9
-  9019.09c  -0.376652227934    %  F-19
- 11023.09c  -0.234050692728    %  Na-23
- 90232.09c  -0.295287150520    %  Th-232
- 92234.09c  -0.000134894475    %  U-234
- 92235.09c  -0.015221636251    %  U-235
- 92236.09c  -0.000070317912    %  U-236
- 92238.09c  -0.064096263090    %  U-238
+  4009.09c  -0.014484265354    %  Be-9
+  9019.09c  -0.376585883679    %  F-19
+ 11023.09c  -0.234009466584    %  Na-23
+ 90232.09c  -0.295235138068    %  Th-232
+ 92234.09c  -0.000014646248    %  U-234
+ 92235.09c  -0.001652698242    %  U-235
+ 92236.09c  -0.000007634809    %  U-236
+ 92238.09c  -0.078010267015    %  U-238
 
 % Refueling Salt Tank: 76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4, U enrichment 0.1975
 mat fuelsalt_rep  -3.20374737 rgb 240 30 30 tmp 950.000000
@@ -246,7 +246,7 @@ mat overflow -0.001 burn 1 vol 1e9 tmp 950.0
 set pcc 0 %predictor-corrector must be turned off to use depletion
 
 mflow U_in
-all 5.0499999999999996e-08
+all 1e-09
 
 mflow offgasratecore
 Ne 1e-2
@@ -258,7 +258,7 @@ Rn 1e-2
 
 % need to account for the increase in vloume with refueling
 mflow over
-all 5.0499999999999996e-08
+all 1e-09
 
 rep source_rep
 rc fuelsalt_rep fuelsalt U_in 0
