@@ -209,6 +209,7 @@ class burn(object):
             while not is_done:
                 if lat.get_burnup_values():
                     is_done = True
+                time.sleep(SLEEP_SEC)
             
             if cleanup:
                 lat.cleanup()
@@ -243,26 +244,27 @@ class burn(object):
             mylat.deck_name = fb_lat_name
             mylat.rep_rate  = self.rep_rate
             mylat.re_rep    = self.rep_rate
+
+            if feedback == 'fs.dopp':
+                mylat.gr_tempK  = self.base_temp + 50.0
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t
+            elif feedback == 'gr.dopp':
+                mylat.gr_tempK  = t + 50.0
+                mylat.mat_tempK = self.base_temp
+                mylat.fs_tempK  = self.base_temp 
+            elif feedback == 'both':
+                mylat.gr_tempK  = t + 50.0
+                mylat.mat_tempK = t
+                mylat.fs_tempK  = t                
+            else:
+                print('ERROR: feedback type does not exist')
+            
+            if mylat.mat_tempK < 900.0:
+                mylat.lib = '06c'
+            if mylat.gr_tempK < 900.0:
+                mylat.gr_lib = '06c'
             if recalc or not mylat.get_burnup_values():
-                if feedback == 'fs.dopp':
-                    mylat.gr_tempK  = self.base_temp + 50.0
-                    mylat.mat_tempK = t
-                    mylat.fs_tempK  = t
-                elif feedback == 'gr.dopp':
-                    mylat.gr_tempK  = t + 50.0
-                    mylat.mat_tempK = self.base_temp
-                    mylat.fs_tempK  = self.base_temp 
-                elif feedback == 'both':
-                    mylat.gr_tempK  = t + 50.0
-                    mylat.mat_tempK = t
-                    mylat.fs_tempK  = t                
-                else:
-                    print('ERROR: feedback type does not exist')
-                
-                if mylat.mat_tempK < 900.0:
-                    mylat.lib = '06c'
-                if mylat.gr_tempK < 900.0:
-                    mylat.gr_lib = '06c'
                 mylat.full_build_run()
         
     def read_feedbacks(self, feedback:str = 'fs.dopp'):
@@ -304,7 +306,7 @@ class burn(object):
 
 if __name__ == '__main__':
     test = burn('thorConSalt', 'thorConSalt')
-    test.run_feedbacks(feedback='fs.dopp',recalc=False)
+    #test.run_feedbacks(feedback='fs.dopp',recalc=False)
     test.read_feedbacks()
     print(test.rhos)
     print(test.alphas)

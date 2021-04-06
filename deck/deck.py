@@ -520,15 +520,11 @@ class serpDeck(object):
 
     def get_calculated_values(self) -> bool:
         'Fill k and cr for lattice if calculated'
-        is_done = False
-        while not is_done:
-            time.sleep(10)          #Wait for serpent
-            if os.path.exists(self.deck_path+'/done.out') and \
-                os.path.getsize(self.deck_path+'/done.out') > 30:
-                is_done = True
-                break
-            else:                   # Calculation not done yet
-                continue
+        if os.path.exists(self.deck_path+'/done.out') and \
+            os.path.getsize(self.deck_path+'/done.out') > 30:
+            pass
+        else:                   # Calculation not done yet
+            return False
 
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
         self.k     = results.resdata["anaKeff"][0]
@@ -536,15 +532,11 @@ class serpDeck(object):
         return True
 
     def get_burnup_values(self) -> bool:
-        is_done = False
-        while not is_done:
-            time.sleep(10)          #Wait for serpent
-            if os.path.exists(self.deck_path+'/done.out') and \
-                os.path.getsize(self.deck_path+'/done.out') > 30:
-                is_done = True
-                break
-            else:                   # Calculation not done yet
-                continue
+        if os.path.exists(self.deck_path+'/done.out') and \
+            os.path.getsize(self.deck_path+'/done.out') > 30:
+            pass
+        else:                   # Calculation not done yet
+            return False
         results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_res.m")
         burn_results = serpentTools.read(self.deck_path + '/' + self.deck_name + "_dep.m")
 
@@ -623,11 +615,7 @@ class serpDeck(object):
 
 if __name__ == '__main__':
     test = serpDeck(reprocess = False)
-    test.cleanup()
-    test.save_deck()
-    test.full_build_run()
-
-    
+    test.get_calculated_values()
 
     
 
