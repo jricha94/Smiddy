@@ -23,7 +23,7 @@ print('good')
 
 results.write('rep rate:' + str(test.rep_rate)+'\n\n')
 
-#Options:
+#Doppler Options:
 #fs.dopp   =    fuel salt doppler 
 #gr.dopp   =    graphite doppler
 #both      =    both dopplers

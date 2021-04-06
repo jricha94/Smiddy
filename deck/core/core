@@ -157,13 +157,13 @@ cell core 0 fill univ_lat -inShield -pot -topCore botCore
 %____________________Material Definitions________
 
 % Graphite Moderator
- mat graphite -1.800791196769776 moder graph 6000
+ mat graphite -1.800791196769776 moder graph 6000 tms 908.15
  rgb 130 130 130
  6000.09c 0.999998
  5010.09c 4e-07
  5011.09c 1.6e-06
 % Thermal Scattering Library for Graphite
- therm graph 908.15 gre7.18t gre7.22t
+ therm graph 0 gre7.18t gre7.22t
 
 % Natural Boron
  mat boronmetal -2.3

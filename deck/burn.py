@@ -37,7 +37,7 @@ class burn(object):
         #reprocessing constants
         self.rep_path:str   = os.getcwd() + '/rep'
         self.e0:float       = 0.021
-        self.rep_e:str      = 0.05
+        self.rep_e:str      = 0.1975
         self.k_diff:float   = 1.0
         self.min_k_diff:float = 0.00665
         self.max_run:int    = 12
@@ -248,16 +248,21 @@ class burn(object):
                     mylat.gr_tempK  = self.base_temp + 50.0
                     mylat.mat_tempK = t
                     mylat.fs_tempK  = t
-                if feedback == 'gr.dopp':
+                elif feedback == 'gr.dopp':
                     mylat.gr_tempK  = t + 50.0
                     mylat.mat_tempK = self.base_temp
                     mylat.fs_tempK  = self.base_temp 
-                if feedback == 'both':
+                elif feedback == 'both':
                     mylat.gr_tempK  = t + 50.0
                     mylat.mat_tempK = t
                     mylat.fs_tempK  = t                
                 else:
                     print('ERROR: feedback type does not exist')
+                
+                if mylat.mat_tempK < 900.0:
+                    mylat.lib = '06c'
+                if mylat.gr_tempK < 900.0:
+                    mylat.gr_lib = '06c'
                 mylat.full_build_run()
         
     def read_feedbacks(self, feedback:str = 'fs.dopp'):
@@ -297,13 +302,13 @@ class burn(object):
 
 
 
-
 if __name__ == '__main__':
-    test = burn('flibe')
-    test.get_rep_rate()
-    fh = open('out.txt', 'w')
-    fh.write(str(test.rep_rate))
-    fh.close()
+    test = burn('thorConSalt', 'thorConSalt')
+    test.run_feedbacks()
+    test.read_feedbacks()
+    print(test.rhos)
+    print(test.alphas)
+
 
 
             

@@ -103,7 +103,7 @@ class serpDeck(object):
         self.nuc_libs:str  = 'ENDF7'    # Nuclear data library
         self.lib:str       = '09c'      # CE xsection temp selection salt
         self.gr_lib:str    = '09c'      # CE xsection temp selection graphite
-        self.queue:str     = 'fill'     # NEcluster torque queue
+        self.queue:str     = 'local'     # NEcluster torque queue
         self.histories:int = 5000       # Neutron histories per cycle
         self.ompcores:int  = 20 if self.queue == 'local' else 8
         self.deck_name:str = 'core'  # Serpent input file name
@@ -371,13 +371,13 @@ class serpDeck(object):
         # Graphite material definition
         mats += dedent(f'''\n
             % Graphite Moderator
-             mat graphite -{str(self.graphiteDensityExpansion(self.gr_tempK))} moder graph 6000
+             mat graphite -{str(self.graphiteDensityExpansion(self.gr_tempK))} moder graph 6000 tms {self.gr_tempK  }
              rgb 130 130 130
              6000.{self.gr_lib} {grFrac}
              5010.{self.gr_lib} {b10Frac}
              5011.{self.gr_lib} {b11Frac}
             % Thermal Scattering Library for Graphite
-             therm graph {self.gr_tempK} gre7.18t gre7.22t''')
+             therm graph 0 gre7.18t gre7.22t''')
 
         # Boron Metal material definition
         mats += dedent(f'''\n
@@ -626,6 +626,7 @@ if __name__ == '__main__':
     test.cleanup()
     test.save_deck()
     test.full_build_run()
+
     
 
     
