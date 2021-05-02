@@ -28,16 +28,16 @@ class vial(object):
         c
         c *********************************
         c Outer vial cylinder of tissue
-        1       1       -1      -1 #2 #3        imp:p
+        1       1       -1      -1 #2 #3        imp:p=1
         c
         c 2 Inner wall of poly
-        2       2       -0.97  -1 -2  3         imp:p
+        2       2       -0.97  -1 -2  3         imp:p=1
         c
         c Cs in vial
-        3       3       -1.873 -1 -2 -3         imp:p
+        3       3       -1.873 -1 -2 -3         imp:p=1
         c
         c VOID
-        99      0       1                       imp:0
+        99      0       1                       imp:p=0
         
         c *********************************
         c
@@ -82,8 +82,6 @@ class vial(object):
         #PBS -V
         #PBS -l nodes=1:ppn=8
 
-        module load gcc/5.4.0
-        module load mpi
         module load MCNP6/2.0
 
         cd $PBS_O_WORKDIR
@@ -100,7 +98,7 @@ class vial(object):
 
     def runVial(self):
         os.chdir(self.path)
-        os.system(f'chmod +x {self.runName} && ./{self.runName}')
+        os.system(f'chmod +x {self.runName} && qsub {self.runName}')
         os.chdir('/..')
 
     def getValues(self) -> bool:
