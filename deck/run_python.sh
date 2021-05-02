@@ -8,4 +8,4 @@ module load serpent
  
 cd ${PBS_O_WORKDIR}
  
-qsub python3 controller.py > py_out
+python3 controller.py > py_out
