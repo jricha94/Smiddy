@@ -166,7 +166,6 @@ def convergeThickness(cleanUp:bool=False):
     isDone = False
     while not isDone:
         if vial0.getValues() and vial1.getValues():
-            print(vial0.dose)
             isDone = True
         else:
             time.sleep(.1) # Wait for MCNP
