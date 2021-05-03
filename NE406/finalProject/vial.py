@@ -195,6 +195,6 @@ myVial.getValues()
 print(myVial.dose, myVial.doseE)
 vial2 = vial(vialThickness=20.0)
 vial2.runVial()
-vial2.path = cwd + '/vial2'
+vial2.path = cwd + 'vial2'
 vial2.getValues()
 print(vial2.dose, vial2.doseE)
