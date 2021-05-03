@@ -77,8 +77,8 @@ class vial(object):
         *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
                    imesh = 15.0 iints = 1000
                    jmesh = 15.0 jints = 1000
-                   kmesh = 15.0 kints = 1
-                   out=ij''')
+                   kmesh = 15.0 kints = 1000
+                   out=ik''')
         try:
             os.chdir(self.path)
         except:
