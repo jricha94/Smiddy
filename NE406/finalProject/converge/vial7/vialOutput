@@ -30,8 +30,8 @@
   | WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.                            !
   +-----------------------------------------------------------------------+
   
-1mcnp     version 6     ld=02/20/18                     05/03/21 15:00:06 
- *************************************************************************                 probid =  05/03/21 15:00:06 
+1mcnp     version 6     ld=02/20/18                     05/03/21 16:14:33 
+ *************************************************************************                 probid =  05/03/21 16:14:33 
  TASKS 8 inp=vialInput outp=vialOutput runtpe=vialRuntape
 
  
@@ -43,30 +43,30 @@
          5-       c
          6-       c *********************************
          7-       c Outer vial cylinder of tissue
-         8-       1       1       -1      -1 #2 #3        imp:p=1
+         8-       1       1       -1      2 -1           imp:p=1
          9-       c
         10-       c 2 Inner wall of poly
-        11-       2       2       -0.97  -1 -2  3         imp:p=1
+        11-       2       2       -0.97   3 -2           imp:p=1
         12-       c
         13-       c Cs in vial
-        14-       3       3       -1.873 -1 -2 -3         imp:p=1
+        14-       3       3       -1.873 -3              imp:p=1
         15-       c
         16-       c VOID
-        17-       99      0       1                       imp:p=0
+        17-       99      0       1                      imp:p=0
         18-       
         19-       c *********************************
         20-       c
         21-       c Surface Definitions
         22-       c
         23-       c *********************************
-        24-       c 1 outer vial cylinder
-        25-       1 rcc 0.0 0.0 0.0   0.0 10.0 0.0    2.2275874125931647
+        24-       c 1 outer tissue cylinder
+        25-       1 rcc 0.0 0.0 0.0   0.0 0.0 10.0    2.341275944060278
         26-       c
-        27-       c 2 poly
-        28-       2 rcc 0.0 0.0 0.0   0.0 10.0 0.0    1.2275874125931647
+        27-       c 2 outer poly
+        28-       2 rcc 0.0 0.0 0.0   0.0 0.0 10.0    1.341275944060278
         29-       c
-        30-       c 3 Cs
-        31-       3 rcc 0.0 0.2 0.0   0.0 9.6 0.0     0.49
+        30-       c 3 outer Cs
+        31-       3 rcc 0.0 0.0 0.2   0.0 0.0 9.6     0.49
         32-       
         33-       c *********************************
         34-       c
@@ -78,18 +78,18 @@
         40-       m3 55137 1              $Cs137
         41-       mode p
         42-       nps 1e6
-        43-       sdef pos=0 0 0 axs=0 1 0 cell=1 erg=0.661 par=p rad=d1 ext=d2
-        44-       si1 0 1
+        43-       sdef pos=0 0 5 axs=0 0 1 cell=3 erg=0.661 par=p rad=d1 ext=d2
+        44-       si1 0 0.49
         45-       sp1 0 1
-        46-       si2 0.2 9.6
+        46-       si2 -4.8 4.6
         47-       sp2 0 1
         48-       f6:p 1
         49-       fm6 5439.6
         50-       *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
         51-                  imesh = 15.0 iints = 1000
-        52-                  jmesh = 15.0 jints = 1000
-        53-                  kmesh = 15.0 kints = 1
-        54-                  out=ij
+        52-                  jmesh = 15.0 jints = 1
+        53-                  kmesh = 15.0 kints = 1000
+        54-                  out=ik
 
  ***************************************************
  * Random Number Generator  =                    1 *
@@ -115,12 +115,12 @@
                                atom        gram                                            photon                                      
               cell      mat   density     density     volume       mass            pieces importance                                   
 
-        1        1        1  7.08362E-02 1.00000E+00 1.08548E+02 1.08548E+02           1  1.0000E+00                                   
-        2        2        2  1.25033E-01 9.70000E-01 4.01016E+01 3.88986E+01           1  1.0000E+00                                   
+        1        1        1  7.08362E-02 1.00000E+00 1.15691E+02 1.15691E+02           1  1.0000E+00                                   
+        2        2        2  1.25033E-01 9.70000E-01 4.92767E+01 4.77984E+01           1  1.0000E+00                                   
         3        3        3  8.23864E-03 1.87300E+00 7.24125E+00 1.35629E+01           1  1.0000E+00                                   
         4       99        0  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00           0  0.0000E+00                                   
 
- total                                               1.55890E+02 1.61009E+02
+ total                                               1.72209E+02 1.77052E+02
 
     minimum source weight = 1.0000E+00    maximum source weight = 1.0000E+00
  
@@ -180,126 +180,76 @@
          0
 
          3 warning messages so far.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position -2.85046E-01  7.81710E+00  2.68079E-02 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position -9.18091E-01  8.09924E+00 -3.07804E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position  1.89290E-02  1.93399E+00  5.18169E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position -1.43189E-01  1.57272E+00 -1.54855E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1758407376 on SI -1792246649 for independent variable cel at the last sampled position  3.77092E-01  9.15799E+00 -7.35681E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position -6.55346E-02  7.43176E+00 -3.24972E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position  2.29873E-02  1.07041E+00 -3.13348E-01 appears incorrect.
-
- only 0 successes in 1000 tries in source cell 1
-
- entry 1 on SI -1792246649 for independent variable cel at the last sampled position -4.51632E-01  3.87838E+00 -1.83693E-01 appears incorrect.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- bad trouble in subroutine sourcb of mcrun                            
-
- source particle no.            6                                     
-
-                                                                      
-
- the sampling efficiency in source cell 1 is too low.
 1problem summary                                                                                                           
 
-      run terminated because of bad trouble.
-+                                                                                                    05/03/21 15:00:06 
+      run terminated when     1000000  particle histories were done.
++                                                                                                    05/03/21 16:14:40 
 
- =====>       0.75 M histories/hr    (based on wall-clock time in mcrun)
+ =====>     582.00 M histories/hr    (based on wall-clock time in mcrun)
 
 
-      Title Card: NE406 final project     probid =  05/03/21 15:00:06 
+      Title Card: NE406 final project     probid =  05/03/21 16:14:33 
 
- _________________________________
- No creation or loss for photons  
- _________________________________
+ photon creation     tracks      weight        energy            photon loss         tracks      weight        energy
+                                 (per source particle)                                           (per source particle)
 
- computer time so far in this run     0.04 minutes            maximum number ever in bank         0
- computer time in mcrun               0.00 minutes            bank overflows to backup file       0
- source particles per minute            4.8000E+02
- random numbers generated                    24000            most random numbers used was        3000 in history           1
+ source             1000000    1.0000E+00    6.6100E-01          escape              977097    9.7710E-01    5.8731E-01
+ nucl. interaction        0    0.            0.                  energy cutoff            0    0.            6.0579E-06
+ particle decay           0    0.            0.                  time cutoff              0    0.            0.        
+ weight window            0    0.            0.                  weight window            0    0.            0.        
+ cell importance          0    0.            0.                  cell importance          0    0.            0.        
+ weight cutoff            0    0.            0.                  weight cutoff            0    0.            0.        
+ e or t importance        0    0.            0.                  e or t importance        0    0.            0.        
+ dxtran                   0    0.            0.                  dxtran                   0    0.            0.        
+ forced collisions        0    0.            0.                  forced collisions        0    0.            0.        
+ exp. transform           0    0.            0.                  exp. transform           0    0.            0.        
+ from neutrons            0    0.            0.                  compton scatter          0    0.            6.2882E-02
+ bremsstrahlung       25056    2.5056E-02    6.5304E-04          capture              73861    7.3861E-02    1.2165E-02
+ p-annihilation           0    0.            0.                  pair production          0    0.            0.        
+ photonuclear             0    0.            0.                  photonuclear abs         0    0.            0.        
+ electron x-rays          0    0.            0.                  loss to photofis         0    0.            0.        
+ compton fluores          0    0.            0.                                                                        
+ muon capt fluores        0    0.            0.                                                                        
+ 1st fluorescence     24302    2.4302E-02    6.9813E-04                                                                
+ 2nd fluorescence      1600    1.6000E-03    6.9944E-06                                                                
+ cerenkov                 0    0.            0.                                                                        
+ (gamma,xgamma)           0    0.            0.                                                                        
+ tabular sampling         0    0.            0.                                                                        
+ prompt photofis          0    0.            0.                                                                        
+     total          1050958    1.0510E+00    6.6236E-01              total          1050958    1.0510E+00    6.6236E-01
 
- range of sampled source weights = 1.0000E+36 to 0.0000E+00
+   number of photons banked                    26656        average time of (shakes)              cutoffs
+   photon tracks per source particle      1.0510E+00          escape            1.0113E-02          tco   1.0000E+33
+   photon collisions per source particle  3.6919E-01          capture           2.6335E-03          eco   1.0000E-03
+   total photon collisions                    369190          capture or escape 9.5873E-03          wc1  -5.0000E-01
+                                                              any termination   9.5873E-03          wc2  -2.5000E-01
 
- source efficiency = 0.0000  in cell        1
+ computer time so far in this run     0.86 minutes            maximum number ever in bank         4
+ computer time in mcrun               0.55 minutes            bank overflows to backup file       0
+ source particles per minute            1.8335E+06
+ random numbers generated                 13317535            most random numbers used was         175 in history      601666
 
-      8 particles got lost.
-  warning.          8 particles got lost
+ range of sampled source weights = 1.0000E+00 to 1.0000E+00
+
+ source efficiency = 1.0000  in cell        3
 
  number of histories processed by each thread
-           1           1           1           1           1           1           1           1
+      116905      126424      123630      125890      126161      127734      127193      126063
+1photon   activity in each cell                                                                         print table 126
+
+                       tracks     population   collisions   collisions     number        flux        average      average
+              cell    entering                               * weight     weighted     weighted   track weight   track mfp
+                                                          (per history)    energy       energy     (relative)      (cm)
+
+        1        1      895590       885079       103755    1.0376E-01   5.8684E-01   5.8684E-01   1.0000E+00   1.1512E+01
+        2        2     1011661       984539       110574    1.1057E-01   6.0645E-01   6.0645E-01   1.0000E+00   1.1199E+01
+        3        3     1018087      1023646       154861    1.5486E-01   6.3516E-01   6.3516E-01   1.0000E+00   6.7750E+00
+
+           total       2925338      2893264       369190    3.6919E-01
 
  Mesh tallies written to file meshtal
 
-1tally        6        nps =           8
+1tally        6        nps =     1000000
            tally type 6    track length estimate of heating.                                   
            particle(s): photons  
 
@@ -307,42 +257,162 @@
 
            masses  
                    cell:       1                                                                                   
-                         1.08548E+02
+                         1.15691E+02
  
  cell  1                                                                                                                               
-                 0.00000E+00 0.0000
+                 9.84724E-01 0.0006
 
- there are no nonzero tallies in the tally fluctuation chart bin for tally        6
+
+ ===================================================================================================================================
+
+           results of 10 statistical checks for the estimated answer for the tally fluctuation chart (tfc) bin of tally        6
+
+ tfc bin     --mean--      ---------relative error---------      ----variance of the variance----      --figure of merit--     -pdf-
+ behavior    behavior      value   decrease   decrease rate      value   decrease   decrease rate       value     behavior     slope
+
+ desired      random       <0.10      yes      1/sqrt(nps)       <0.10      yes        1/nps           constant    random      >3.00
+ observed     random        0.00      yes          yes            0.00      yes         yes            increase   increase     10.00
+ passed?        yes          yes      yes          yes             yes      yes         yes                no         no         yes
+
+ ===================================================================================================================================
+
+
+ warning.  the tally in the tally fluctuation chart bin did not pass  2 of the 10 statistical checks.
+
+1analysis of the results in the tally fluctuation chart bin (tfc) for tally 6 with nps = 1000000             print table 160
+
+
+ normed average tally per history  = 9.84724E-01          unnormed average tally per history  = 1.13923E+02
+ estimated tally relative error    = 0.0006               estimated variance of the variance  = 0.0000
+ relative error from zero tallies  = 0.0004               relative error from nonzero scores  = 0.0004
+
+ number of nonzero history tallies =      881580          efficiency for the nonzero tallies  = 0.8816
+ history number of largest  tally  =       76841          largest  unnormalized history tally = 7.50548E+02
+ (largest  tally)/(average tally)  = 6.58817E+00          (largest  tally)/(avg nonzero tally)= 5.80800E+00
+
+ (confidence interval shift)/mean  = 0.0000               shifted confidence interval center  = 9.84724E-01
+
+
+ if the largest  history score sampled so far were to occur on the next history, the tfc bin quantities would change as follows:
+
+      estimated quantities           value at nps           value at nps+1           value(nps+1)/value(nps)-1.
+
+      mean                            9.84724E-01             9.84729E-01                     0.000006
+      relative error                  5.63877E-04             5.63901E-04                     0.000043
+      variance of the variance        5.18567E-06             5.19408E-06                     0.001622
+      shifted center                  9.84724E-01             9.84724E-01                     0.000000
+      figure of merit                 5.76643E+06             5.76594E+06                    -0.000085
+
+ the estimated slope of the 198 largest  tallies starting at  5.46862E+02 appears to be decreasing at least exponentially.
+ the large score tail of the empirical history score probability density function appears to have no unsampled regions.
+
+ fom = (histories/minute)*(f(x) signal-to-noise ratio)**2 = (1.833E+06)*( 1.773E+00)**2 = (1.833E+06)*(3.145E+00) = 5.766E+06
+
+1unnormed tally density for tally 6          nonzero tally mean(m) = 1.292E+02   nps = 1000000               print table 161
+
+ abscissa              ordinate   log plot of tally probability density function in tally fluctuation chart bin(d=decade,slope=10.0)
+  tally  number num den log den:d-------------------d---------------------d--------------------d--------------------d---------------
+ 2.51-03      1 1.94-03  -2.713 ********************|*********************|********************|*****************   |               
+ 3.16-03      0 0.00+00   0.000                     |                     |                    |                    |               
+ 3.98-03      0 0.00+00   0.000                     |                     |                    |                    |               
+ 5.01-03      0 0.00+00   0.000                     |                     |                    |                    |               
+ 6.31-03      3 2.31-03  -2.636 ********************|*********************|********************|******************  |               
+ 7.94-03      0 0.00+00   0.000                     |                     |                    |                    |               
+ 1.00-02      1 4.86-04  -3.313 ********************|*********************|********************|****                |               
+ 1.26-02      4 1.54-03  -2.811 ********************|*********************|********************|***************     |               
+ 1.58-02      1 3.07-04  -3.513 ********************|*********************|********************|                    |               
+ 2.00-02      2 4.87-04  -3.312 ********************|*********************|********************|****                |               
+ 2.51-02      2 3.87-04  -3.412 ********************|*********************|********************|**                  |               
+ 3.16-02      5 7.69-04  -3.114 ********************|*********************|********************|********            |               
+ 3.98-02      4 4.89-04  -3.311 ********************|*********************|********************|****                |               
+ 5.01-02      6 5.82-04  -3.235 ********************|*********************|********************|******              |               
+ 6.31-02     10 7.71-04  -3.113 ********************|*********************|********************|********            |               
+ 7.94-02     10 6.12-04  -3.213 ********************|*********************|********************|******              |               
+ 1.00-01      8 3.89-04  -3.410 ********************|*********************|********************|**                  |               
+ 1.26-01     10 3.86-04  -3.413 ********************|*********************|********************|**                  |               
+ 1.58-01     22 6.75-04  -3.171 ********************|*********************|********************|*******             |               
+ 2.00-01     19 4.63-04  -3.334 ********************|*********************|********************|****                |               
+ 2.51-01     31 6.00-04  -3.222 ********************|*********************|********************|******              |               
+ 3.16-01     36 5.54-04  -3.257 ********************|*********************|********************|*****               |               
+ 3.98-01     34 4.15-04  -3.382 ********************|*********************|********************|***                 |               
+ 5.01-01     54 5.24-04  -3.281 ********************|*********************|********************|*****               |               
+ 6.31-01     51 3.93-04  -3.406 ********************|*********************|********************|**                  |               
+ 7.94-01     70 4.28-04  -3.368 ********************|*********************|********************|***                 |               
+ 1.00+00    110 5.35-04  -3.272 ********************|*********************|********************|*****               |               
+ 1.26+00    126 4.87-04  -3.313 ********************|*********************|********************|****                |               
+ 1.58+00    172 5.28-04  -3.278 ********************|*********************|********************|*****               |               
+ 2.00+00    209 5.09-04  -3.293 ********************|*********************|********************|****                |               
+ 2.51+00    259 5.01-04  -3.300 ********************|*********************|********************|****                |               
+ 3.16+00    335 5.15-04  -3.288 ********************|*********************|********************|*****               |               
+ 3.98+00    405 4.95-04  -3.306 ********************|*********************|********************|****                |               
+ 5.01+00    480 4.66-04  -3.332 ********************|*********************|********************|****                |               
+ 6.31+00    642 4.95-04  -3.306 ********************|*********************|********************|****                |               
+ 7.94+00    868 5.31-04  -3.275 ********************|*********************|********************|*****               |               
+ 1.00+01   1021 4.96-04  -3.304 ********************|*********************|********************|****                |               
+ 1.26+01   1375 5.31-04  -3.275 ********************|*********************|********************|*****               |               
+ 1.58+01   1764 5.41-04  -3.267 ********************|*********************|********************|*****               |               
+ 2.00+01   2747 6.69-04  -3.174 ********************|*********************|********************|*******             |               
+ 2.51+01   3959 7.66-04  -3.116 ********************|*********************|********************|********            |               
+ 3.16+01   6995 1.08-03  -2.968 ********************|*********************|********************|***********         |               
+ 3.98+01  12384 1.51-03  -2.820 ********************|*********************|********************|***************     |               
+ 5.01+01  16931 1.64-03  -2.784 ********************|*********************|********************|***************     |               
+ 6.31+01  20438 1.57-03  -2.803 ********************|*********************|********************|***************     |               
+ 7.94+01  25053 1.53-03  -2.814 ********************|*********************|********************|***************     |               
+ 1.00+02  33833 1.64-03  -2.784 ********************|*********************|********************|***************     |               
+ 1.26+02 396712 1.53-02  -1.815 ********************|*********************|********************|********************|***************
+ 1.58+02 203050 6.23-03  -2.206 mmmmmmmmmmmmmmmmmmmm|mmmmmmmmmmmmmmmmmmmmm|mmmmmmmmmmmmmmmmmmmm|mmmmmmmmmmmmmmmmmmmm|mmmmmmm        
+ 2.00+02  84766 2.07-03  -2.685 ********************|*********************|********************|*****************   |               
+ 2.51+02  39569 7.66-04  -3.116 ********************|*********************|********************|********            |               
+ 3.16+02  17694 2.72-04  -3.565 ********************|*********************|********************|                    |               
+ 3.98+02   6998 8.55-05  -4.068 ********************|*********************|*********           |                    |               
+ 5.01+02   1935 1.88-05  -4.726 ********************|*****************    |                    |                    |               
+ 6.31+02    309 2.38-06  -5.623 ******************* |                     |                    |                    |               
+ 7.94+02     57 3.49-07  -6.457 *                   |                     |                    |                    |               
+  total  881580 8.82-01         d-------------------d---------------------d--------------------d--------------------d---------------
 
 1status of the statistical checks used to form confidence intervals for the mean for each tally bin
 
 
  tally   result of statistical checks for the tfc bin (the first check not passed is listed) and error magnitude check for all bins
 
-        6   no nonzero tallies were made in the tally fluctuation chart bin                           
-         no nonzero tallies were made in any one of the      1 tally bins
+        6   missed  2 of 10 tfc bin checks: the figure of merit does not appear to be a constant for the last half of the problem     
+         passed all bin error check:     1 tally bins all have relative errors less than 0.10 with no zero bins
 
 
  the 10 statistical checks are only for the tally fluctuation chart bin and do not apply to other tally bins.
 
  warning.       1 of the     1 tally fluctuation chart bins did not pass all 10 statistical checks.
- warning.       1 of the     1 tallies were all zeros.
 1tally fluctuation charts                              
 
                             tally        6
           nps      mean     error   vov  slope    fom
-            8   0.0000E+00 0.0000 0.0000  0.0 0.0E+00
+        64000   9.8450E-01 0.0022 0.0001 10.0 3495105
+       128000   9.8552E-01 0.0016 0.0000  8.7 4201149
+       192000   9.8466E-01 0.0013 0.0000 10.0 4630152
+       256000   9.8454E-01 0.0011 0.0000 10.0 4861751
+       320000   9.8459E-01 0.0010 0.0000 10.0 5063585
+       384000   9.8461E-01 0.0009 0.0000 10.0 5223881
+       448000   9.8394E-01 0.0008 0.0000 10.0 5333136
+       512000   9.8395E-01 0.0008 0.0000 10.0 5435122
+       576000   9.8405E-01 0.0007 0.0000 10.0 5488347
+       640000   9.8395E-01 0.0007 0.0000 10.0 5546941
+       704000   9.8428E-01 0.0007 0.0000 10.0 5600433
+       768000   9.8445E-01 0.0006 0.0000 10.0 5661215
+       832000   9.8440E-01 0.0006 0.0000 10.0 5693052
+       896000   9.8444E-01 0.0006 0.0000 10.0 5718314
+       960000   9.8469E-01 0.0006 0.0000 10.0 5754368
+      1000000   9.8472E-01 0.0006 0.0000 10.0 5766430
 
  ***********************************************************************************************************************
 
- dump no.    2 on file vialRuntape     nps =           8     coll =              0     ctm =        0.00   nrn =        
-     24000
+ dump no.    2 on file vialRuntape     nps =     1000000     coll =         369190     ctm =        0.55   nrn =        
+  13317535
 
-         6 warning messages so far.
+         5 warning messages so far.
 
 
- run terminated because of bad trouble.
+ run terminated when     1000000  particle histories were done.
 
- computer time =    0.06 minutes
+ computer time =    0.88 minutes
 
- mcnp     version 6     02/20/18                     05/03/21 15:00:07                     probid =  05/03/21 15:00:06 
+ mcnp     version 6     02/20/18                     05/03/21 16:14:40                     probid =  05/03/21 16:14:33 
