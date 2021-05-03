@@ -172,6 +172,9 @@ def convergeThickness(cleanUp:bool=False):
     else:
         time.sleep(10) # Wait for MCNP
 
+    vial0.getValues()
+    vial1.getValues()
+    
     dose0, dose0err = vial0.dose, vial0.doseE
     dose1, dose1err = vial1.dose, vial1.doseE
     thick0 = minThick
