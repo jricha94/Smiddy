@@ -30,8 +30,8 @@
   | WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.                            !
   +-----------------------------------------------------------------------+
   
-1mcnp     version 6     ld=02/20/18                     05/03/21 01:52:37 
- *************************************************************************                 probid =  05/03/21 01:52:37 
+1mcnp     version 6     ld=02/20/18                     05/03/21 14:57:05 
+ *************************************************************************                 probid =  05/03/21 14:57:05 
  TASKS 8 inp=vialInput outp=vialOutput runtpe=vialRuntape
 
  
@@ -60,10 +60,10 @@
         22-       c
         23-       c *********************************
         24-       c 1 outer vial cylinder
-        25-       1 rcc 0.0 0.0 0.0   0.0 10.0 0.0    24.68121728638767
+        25-       1 rcc 0.0 0.0 0.0   0.0 10.0 0.0    20.688022251489862
         26-       c
         27-       c 2 poly
-        28-       2 rcc 0.0 0.0 0.0   0.0 10.0 0.0    23.68121728638767
+        28-       2 rcc 0.0 0.0 0.0   0.0 10.0 0.0    19.688022251489862
         29-       c
         30-       c 3 Cs
         31-       3 rcc 0.0 0.2 0.0   0.0 9.6 0.0     0.49
@@ -77,10 +77,19 @@
         39-       m2 6012 2 1001 4        $poly
         40-       m3 55137 1              $Cs137
         41-       mode p
-        42-       nps 1e5
-        43-       sdef cell=1 erg=0.661 par=p
-        44-       f6:p 1
-        45-       fm6 5439.6
+        42-       nps 1e6
+        43-       sdef pos=0 0 0 axs=0 1 0 cell=1 erg=0.661 par=p rad=d1 ext=d2
+        44-       si1 0 1
+        45-       sp1 0 1
+        46-       si2 0.2 9.6
+        47-       sp2 0 1
+        48-       f6:p 1
+        49-       fm6 5439.6
+        50-       *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
+        51-                  imesh = 15.0 iints = 1000
+        52-                  jmesh = 15.0 jints = 1000
+        53-                  kmesh = 15.0 kints = 1
+        54-                  out=ij
 
  ***************************************************
  * Random Number Generator  =                    1 *
@@ -98,18 +107,20 @@
  
   comment.           2 surfaces were deleted for being the same as others.
  
+  warning.  source variable rad is sampled uniformly.
+ 
   warning.    2 materials had unnormalized fractions. print table 40.
 1cells                                                                                                  print table 60
 
                                atom        gram                                            photon                                      
               cell      mat   density     density     volume       mass            pieces importance                                   
 
-        1        1        1  7.08362E-02 1.00000E+00 1.51935E+03 1.51935E+03           1  1.0000E+00                                   
-        2        2        2  1.25033E-01 9.70000E-01 1.76108E+04 1.70825E+04           1  1.0000E+00                                   
+        1        1        1  7.08362E-02 1.00000E+00 1.26845E+03 1.26845E+03           1  1.0000E+00                                   
+        2        2        2  1.25033E-01 9.70000E-01 1.21701E+04 1.18050E+04           1  1.0000E+00                                   
         3        3        3  8.23864E-03 1.87300E+00 7.24125E+00 1.35629E+01           1  1.0000E+00                                   
         4       99        0  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00           0  0.0000E+00                                   
 
- total                                               1.91374E+04 1.86154E+04
+ total                                               1.34458E+04 1.30871E+04
 
     minimum source weight = 1.0000E+00    maximum source weight = 1.0000E+00
  
@@ -119,7 +130,7 @@
  
   comment.  threading will generally not be used for model physics.
 
-          1 warning message so far.
+         2 warning messages so far.
 1cross-section tables                                                                                   print table 100
      XSDIR used: /opt/MCNP6.2/MCNP_DATA/xsdir_mcnp6.2
 
@@ -168,517 +179,127 @@
  dump no.    1 on file vialRuntape     nps =           0     coll =              0     ctm =        0.00   nrn =        
          0
 
-         2 warning messages so far.
-1     event log for lost particle no.   1          nps =          12        ijk =      144449298336989
+         3 warning messages so far.
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
+ only 0 successes in 1000 tries in source cell 1
 
- source    1  0.000+00  0.000+00  0.000+00 -6.489-02 -1.626-01  9.845-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -3.222-02 -8.077-02  4.889-01 -6.489-02 -1.626-01  9.845-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 1     no cell found in subroutine newcel     history no. 6
+ entry 0 on SI -1792246649 for independent variable cel at the last sampled position -9.18091E-01  8.09924E+00 -3.07804E-01 appears incorrect.
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
+ only 0 successes in 1000 tries in source cell 1
 
- point (x,y,z) is in cell 99
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position -4.51632E-01  3.87838E+00 -1.83693E-01 appears incorrect.
 
- x,y,z coordinates:         -3.22248E-02   -8.07732E-02    4.88939E-01
- u,v,w direction cosines:   -6.48891E-02   -1.62648E-01    9.84548E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.65652E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 4.96613E-01
- the distance to collision from the last event is 5.73024E+00
- the number of photon   collisions so far in this history is 0.
+ only 0 successes in 1000 tries in source cell 1
 
+ entry -1142746672 on SI -1792246649 for independent variable cel at the last sampled position  3.77092E-01  9.15799E+00 -7.35681E-01 appears incorrect.
 
+ only 0 successes in 1000 tries in source cell 1
 
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position -2.85046E-01  7.81710E+00  2.68079E-02 appears incorrect.
 
+ only 0 successes in 1000 tries in source cell 1
 
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position -1.43189E-01  1.57272E+00 -1.54855E-01 appears incorrect.
 
-1     event log for lost particle no.   2          nps =          19        ijk =      184001225389957
+ only 0 successes in 1000 tries in source cell 1
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position  2.29873E-02  1.07041E+00 -3.13348E-01 appears incorrect.
 
- source    1  0.000+00  0.000+00  0.000+00  9.710-01 -5.665-02 -2.323-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  4.766-01 -2.780-02 -1.140-01  9.710-01 -5.665-02 -2.323-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 2     no cell found in subroutine newcel     history no. 4
+ only 0 successes in 1000 tries in source cell 1
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position  1.89290E-02  1.93399E+00  5.18169E-01 appears incorrect.
 
- point (x,y,z) is in cell 99
+ only 0 successes in 1000 tries in source cell 1
 
- x,y,z coordinates:          4.76556E-01   -2.78042E-02   -1.13991E-01
- u,v,w direction cosines:    9.71002E-01   -5.66522E-02   -2.32262E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.63709E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 4.90788E-01
- the distance to collision from the last event is 9.50641E+00
- the number of photon   collisions so far in this history is 0.
+ entry 1 on SI -1792246649 for independent variable cel at the last sampled position -6.55346E-02  7.43176E+00 -3.24972E-01 appears incorrect.
 
 
 
 
 
 
-1     event log for lost particle no.   3          nps =          31        ijk =       63568505873773
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
 
- source    1  0.000+00  0.000+00  0.000+00  8.952-01 -4.447-01 -2.944-02 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  4.897-01 -2.433-01 -1.611-02  8.952-01 -4.447-01 -2.944-02 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 3     no cell found in subroutine newcel     history no. 2
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
 
- point (x,y,z) is in cell 99
 
- x,y,z coordinates:          4.89735E-01   -2.43268E-01   -1.61080E-02
- u,v,w direction cosines:    8.95206E-01   -4.44679E-01   -2.94445E-02
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.82481E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 5.47064E-01
- the distance to collision from the last event is 2.74768E+00
- the number of photon   collisions so far in this history is 0.
 
 
 
 
 
 
-1     event log for lost particle no.   4          nps =          38        ijk =      233886346405645
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
 
- source    1  0.000+00  0.000+00  0.000+00 -6.698-01 -7.177-01 -1.905-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -4.713-01 -5.050-01 -1.341-01 -6.698-01 -7.177-01 -1.905-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 4     no cell found in subroutine newcel     history no. 11
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
 
- point (x,y,z) is in cell 99
 
- x,y,z coordinates:         -4.71305E-01   -5.04954E-01   -1.34059E-01
- u,v,w direction cosines:   -6.69830E-01   -7.17654E-01   -1.90528E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 2.34702E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 7.03618E-01
- the distance to collision from the last event is 1.79133E+00
- the number of photon   collisions so far in this history is 0.
 
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
 
-        2             
 
 
 
 
 
 
-1     event log for lost particle no.   5          nps =          47        ijk =      279908069983049
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
 
- source    1  0.000+00  0.000+00  0.000+00  1.395-01 -9.829-01  1.202-01 6.610-01 1.000+00   particle= photon        4                   
-    sur    1  2.224-01 -2.298+00  4.366-01  9.454-02 -9.780-01  1.860-01 6.583-01 1.000+00   surf=     3.1           18                  
-1   lost particle no. 5     no cell found in subroutine newcel     history no. 16
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
 
- point (x,y,z) is in cell 99
 
- x,y,z coordinates:          2.22370E-01   -2.29798E+00    4.36637E-01
- u,v,w direction cosines:    9.45353E-02   -9.77995E-01    1.85982E-01
- energy = 6.58253E-01    weight = 1.00000E+00    time = 7.83761E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 2.34422E+00
- the distance to collision from the last event is 1.67804E+01
- the number of photon   collisions so far in this history is 1.
 
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
 
-        2             
 
 
 
 
 
 
-1     event log for lost particle no.   6          nps =          54        ijk =      120424279279181
 
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
 
- source    1  0.000+00  0.000+00  0.000+00 -9.117-01 -3.647-01 -1.891-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -4.840-01 -4.796-01  7.666-02 -3.230-01 -8.635-01  3.874-01 4.160-01 1.000+00   surf=     3.1           21                  
-1   lost particle no. 6     no cell found in subroutine newcel     history no. 22
 
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
 
- point (x,y,z) is in cell 99
 
- x,y,z coordinates:         -4.83966E-01   -4.79649E-01    7.66624E-02
- u,v,w direction cosines:   -3.22962E-01   -8.63482E-01    3.87421E-01
- energy = 4.16020E-01    weight = 1.00000E+00    time = 2.60982E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 3.89591E-01
- the distance to collision from the last event is 4.32855E+00
- the number of photon   collisions so far in this history is 1.
 
+ bad trouble in subroutine sourcb of mcrun                            
 
+ source particle no.            2                                     
 
+                                                                      
 
-
-
-1     event log for lost particle no.   7          nps =          60        ijk =      156601284125677
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00 -2.568-01 -6.391-01 -7.249-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -1.636-01 -4.072-01 -4.619-01 -2.568-01 -6.391-01 -7.249-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 7     no cell found in subroutine newcel     history no. 26
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:         -1.63633E-01   -4.07205E-01   -4.61870E-01
- u,v,w direction cosines:   -2.56835E-01   -6.39139E-01   -7.24940E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 2.12519E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 6.37115E-01
- the distance to collision from the last event is 1.42051E+00
- the number of photon   collisions so far in this history is 0.
-
-
-
-
-
-
-1     event log for lost particle no.   8          nps =          65        ijk =      125667646496665
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00 -9.742-02 -3.639-01 -9.263-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -5.125-02 -1.914-01 -4.873-01 -9.742-02 -3.639-01 -9.263-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 8     no cell found in subroutine newcel     history no. 32
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:         -5.12514E-02   -1.91447E-01   -4.87312E-01
- u,v,w direction cosines:   -9.74227E-02   -3.63917E-01   -9.26322E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.75479E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 5.26072E-01
- the distance to collision from the last event is 2.21167E+01
- the number of photon   collisions so far in this history is 0.
-
-
-
-
-
-
-1     event log for lost particle no.   9          nps =          70        ijk =      209992805954325
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00  5.039-01 -1.460-01  8.513-01 6.610-01 1.000+00   particle= photon        4                   
-    sur    1  2.496-01 -7.231-02  4.217-01  5.039-01 -1.460-01  8.513-01 6.610-01 1.000+00   surf=     3.1           5                   
-1   lost particle no. 9     no cell found in subroutine newcel     history no. 42
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:          2.49606E-01   -7.23142E-02    4.21659E-01
- u,v,w direction cosines:    5.03943E-01   -1.45999E-01    8.51309E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.65217E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 4.95307E-01
- the distance to collision from the last event is 1.84355E+01
- the number of photon   collisions so far in this history is 0.
-
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
-
-        2             
-
-
-
-
-
-
-1     event log for lost particle no.  10          nps =          74        ijk =      183087787784669
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00  1.200-01 -9.195-01 -3.743-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  1.496-01 -1.146+00 -4.666-01  1.200-01 -9.195-01 -3.743-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 10     no cell found in subroutine newcel     history no. 46
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:          1.49580E-01   -1.14635E+00   -4.66611E-01
- u,v,w direction cosines:    1.19982E-01   -9.19521E-01   -3.74281E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 4.15850E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 1.24669E+00
- the distance to collision from the last event is 2.14520E+01
- the number of photon   collisions so far in this history is 0.
-
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
-
-        2             
-
-
-
-
-
-
-1     event log for lost particle no.  11          nps =          75        ijk =      136914563831073
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00 -1.053-01 -9.805-01  1.658-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -2.627-01 -2.447+00  4.136-01 -1.053-01 -9.805-01  1.658-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 11     no cell found in subroutine newcel     history no. 50
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:         -2.62707E-01   -2.44653E+00    4.13624E-01
- u,v,w direction cosines:   -1.05289E-01   -9.80527E-01    1.65774E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 8.32281E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 2.49512E+00
- the distance to collision from the last event is 2.66362E+00
- the number of photon   collisions so far in this history is 0.
-
-
-
-
-
-
-1     event log for lost particle no.  12          nps =          75        ijk =      136914563831073
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00  3.563-01 -9.278-01 -1.103-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  4.681-01 -1.219+00 -1.449-01  3.563-01 -9.278-01 -1.103-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 12     no cell found in subroutine newcel     history no. 57
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:          4.68092E-01   -1.21893E+00   -1.44877E-01
- u,v,w direction cosines:    3.56307E-01   -9.27838E-01   -1.10279E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 4.38214E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 1.31373E+00
- the distance to collision from the last event is 3.07921E+01
- the number of photon   collisions so far in this history is 0.
-
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
-
-        2             
-
-
-
-
-
-
-1     event log for lost particle no.  13          nps =          75        ijk =      136914563831073
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00  3.700-01 -7.500-01 -5.483-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  2.741-01 -5.556-01 -4.062-01  3.700-01 -7.500-01 -5.483-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 13     no cell found in subroutine newcel     history no. 63
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:          2.74120E-01   -5.55572E-01   -4.06151E-01
- u,v,w direction cosines:    3.70040E-01   -7.49979E-01   -5.48272E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 2.47099E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 7.40783E-01
- the distance to collision from the last event is 2.37216E+00
- the number of photon   collisions so far in this history is 0.
-
-
-
-
-
-
-1     event log for lost particle no.  14          nps =          75        ijk =      136914563831073
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00 -1.298-01 -4.457-01  8.857-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1 -7.105-02 -2.440-01  4.848-01 -1.298-01 -4.457-01  8.857-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 14     no cell found in subroutine newcel     history no. 68
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:         -7.10464E-02   -2.43959E-01    4.84822E-01
- u,v,w direction cosines:   -1.29795E-01   -4.45691E-01    8.85727E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.82584E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 5.47372E-01
- the distance to collision from the last event is 1.50018E+01
- the number of photon   collisions so far in this history is 0.
-
- the cells so far found on the other side of surface         3.1 of cell 1
- (and the surface with respect to which the point x,y,z had the wrong sense) are:
- (see chapter 5 of the user manual.)
-
-        2             
-
-
-
-
-
-
-1     event log for lost particle no.  15          nps =          75        ijk =      136914563831073
-
-        cell     x         y         z         u         v         w       erg      wgt                          nch nrn
-
- source    1  0.000+00  0.000+00  0.000+00  3.372-01 -2.682-01  9.024-01 6.610-01 1.000+00   particle= photon        2                   
-    sur    1  1.715-01 -1.364-01  4.590-01  3.372-01 -2.682-01  9.024-01 6.610-01 1.000+00   surf=     3.1           3                   
-1   lost particle no. 15     no cell found in subroutine newcel     history no. 70
-
- the photon   currently being tracked has reached surface         3.1; there
- appears to be no cell on the other side of the surface from cell 1
- at that point.
-
- point (x,y,z) is in cell 99
-
- x,y,z coordinates:          1.71503E-01   -1.36438E-01    4.59006E-01
- u,v,w direction cosines:    3.37180E-01   -2.68240E-01    9.02417E-01
- energy = 6.61000E-01    weight = 1.00000E+00    time = 1.69664E-03
- sqrt(z**2+x**2) = 4.90000E-01
- the distance to surface         3.1 from the last event is 5.08641E-01
- the distance to collision from the last event is 1.44473E+01
- the number of photon   collisions so far in this history is 0.
-
-
-
-
-
-
+ the sampling efficiency in source cell 1 is too low.
 1problem summary                                                                                                           
 
-      run terminated because  15 particles got lost.
-+                                                                                                    05/03/21 01:52:38 
+      run terminated because of bad trouble.
++                                                                                                    05/03/21 14:57:05 
 
- =====>     123.63 M histories/hr    (based on wall-clock time in mcrun)
+ =====>       0.75 M histories/hr    (based on wall-clock time in mcrun)
 
 
-      Title Card: NE406 final project     probid =  05/03/21 01:52:37 
+      Title Card: NE406 final project     probid =  05/03/21 14:57:05 
 
- photon creation     tracks      weight        energy            photon loss         tracks      weight        energy
-                                 (per source particle)                                           (per source particle)
+ _________________________________
+ No creation or loss for photons  
+ _________________________________
 
- source                  90    1.2000E+00    6.6100E-01          escape                  51    6.8000E-01    1.7084E-01
- nucl. interaction        0    0.            0.                  energy cutoff            0    0.            8.1421E-07
- particle decay           0    0.            0.                  time cutoff              0    0.            0.        
- weight window            0    0.            0.                  weight window            0    0.            0.        
- cell importance          0    0.            0.                  cell importance          0    0.            0.        
- weight cutoff            0    0.            0.                  weight cutoff            0    0.            0.        
- e or t importance        0    0.            0.                  e or t importance        0    0.            0.        
- dxtran                   0    0.            0.                  dxtran                   0    0.            0.        
- forced collisions        0    0.            0.                  forced collisions        0    0.            0.        
- exp. transform           0    0.            0.                  exp. transform           0    0.            0.        
- from neutrons            0    0.            0.                  compton scatter          0    0.            3.2329E-01
- bremsstrahlung           0    0.            8.1421E-07          capture                  9    1.2000E-01    1.2037E-02
- p-annihilation           0    0.            0.                  pair production          0    0.            0.        
- photonuclear             0    0.            0.                  photonuclear abs         0    0.            0.        
- electron x-rays          0    0.            0.                  loss to photofis         0    0.            0.        
- compton fluores          0    0.            0.                                                                        
- muon capt fluores        0    0.            0.                                                                        
- 1st fluorescence         0    0.            0.                                                                        
- 2nd fluorescence         0    0.            0.                                                                        
- cerenkov                 0    0.            0.                                                                        
- (gamma,xgamma)           0    0.            0.                                                                        
- tabular sampling         0    0.            0.                                                                        
- prompt photofis          0    0.            0.                                                                        
-     total               90    1.2000E+00    6.6100E-01              total               60    8.0000E-01    5.0616E-01
-
-   number of photons banked                        0        average time of (shakes)              cutoffs
-   photon tracks per source particle      1.2000E+00          escape            8.4532E-02          tco   1.0000E+33
-   photon collisions per source particle  3.4000E+00          capture           2.2496E-01          eco   1.0000E-03
-   total photon collisions                       255          capture or escape 1.0560E-01          wc1  -5.0000E-01
-                                                              any termination   1.0560E-01          wc2  -2.5000E-01
-
- computer time so far in this run     0.03 minutes            maximum number ever in bank         0
+ computer time so far in this run     0.04 minutes            maximum number ever in bank         0
  computer time in mcrun               0.00 minutes            bank overflows to backup file       0
- source particles per minute            4.5000E+03
- random numbers generated                     4042            most random numbers used was         303 in history          71
+ source particles per minute            4.8000E+02
+ random numbers generated                    24000            most random numbers used was        3000 in history           1
 
- range of sampled source weights = 1.0000E+00 to 1.0000E+00
+ range of sampled source weights = 1.0000E+36 to 0.0000E+00
 
-     15 particles got lost.
-  warning.         15 particles got lost
+ source efficiency = 0.0000  in cell        1
+
+      8 particles got lost.
+  warning.          8 particles got lost
 
  number of histories processed by each thread
-          11           5          12           8           7          13           7          12
-1photon   activity in each cell                                                                         print table 126
+           1           1           1           1           1           1           1           1
 
-                       tracks     population   collisions   collisions     number        flux        average      average
-              cell    entering                               * weight     weighted     weighted   track weight   track mfp
-                                                          (per history)    energy       energy     (relative)      (cm)
+ Mesh tallies written to file meshtal
 
-        1        1         102           90          181    2.4133E+00   3.4376E-01   3.4376E-01   1.0000E+00   8.7930E+00
-        2        2          53           50          120    1.6000E+00   3.4776E-01   3.4776E-01   1.0000E+00   8.6267E+00
-        3        3          27           27            4    5.3333E-02   6.0547E-01   6.0547E-01   1.0000E+00   6.4374E+00
-
-           total           182          167          305    4.0667E+00
-
-1tally        6        nps =          75
+1tally        6        nps =           8
            tally type 6    track length estimate of heating.                                   
            particle(s): photons  
 
@@ -686,119 +307,42 @@
 
            masses  
                    cell:       1                                                                                   
-                         1.51935E+03
+                         1.26845E+03
  
  cell  1                                                                                                                               
-                 4.14018E-01 0.1996
+                 0.00000E+00 0.0000
 
-
- ***** the nps-dependent tfc bin check results are suspect because there are only  1 nps tally values to analyze *****
-
-
- ===================================================================================================================================
-
-           results of 10 statistical checks for the estimated answer for the tally fluctuation chart (tfc) bin of tally        6
-
- tfc bin     --mean--      ---------relative error---------      ----variance of the variance----      --figure of merit--     -pdf-
- behavior    behavior      value   decrease   decrease rate      value   decrease   decrease rate       value     behavior     slope
-
- desired      random       <0.10      yes      1/sqrt(nps)       <0.10      yes        1/nps           constant    random      >3.00
- observed     random        0.20      yes          yes            0.05      yes         yes            constant    random       0.00
- passed?        yes           no      yes          yes             yes      yes         yes               yes        yes          no
-
- ===================================================================================================================================
-
-
- warning.  the tally in the tally fluctuation chart bin did not pass  2 of the 10 statistical checks.
-
-1analysis of the results in the tally fluctuation chart bin (tfc) for tally 6 with nps = 75                  print table 160
-
-
- normed average tally per history  = 4.14018E-01          unnormed average tally per history  = 6.29038E+02
- estimated tally relative error    = 0.1996               estimated variance of the variance  = 0.0472
- relative error from zero tallies  = 0.0577               relative error from nonzero scores  = 0.1910
-
- number of nonzero history tallies =          60          efficiency for the nonzero tallies  = 0.8000
- history number of largest  tally  =          40          largest  unnormalized history tally = 4.19710E+03
- (largest  tally)/(average tally)  = 6.67226E+00          (largest  tally)/(avg nonzero tally)= 5.33780E+00
-
- (confidence interval shift)/mean  = 0.0194               shifted confidence interval center  = 4.22066E-01
-
-
- if the largest  history score sampled so far were to occur on the next history, the tfc bin quantities would change as follows:
-
-      estimated quantities           value at nps           value at nps+1           value(nps+1)/value(nps)-1.
-
-      mean                            4.14018E-01             4.44918E-01                     0.074635
-      relative error                  1.99555E-01             1.95809E-01                    -0.018768
-      variance of the variance        4.71713E-02             4.53996E-02                    -0.037560
-      shifted center                  4.22066E-01             4.22231E-01                     0.000393
-      figure of merit                 1.67747E+05             1.74226E+05                     0.038620
-
- there is not enough information in the largest  history scores (usually less than 500 scores) for a reliable estimate of the slope.
- the large score tail of the empirical history score probability density function appears to have no unsampled regions.
-
- fom = (histories/minute)*(f(x) signal-to-noise ratio)**2 = (5.010E+05)*( 5.786E-01)**2 = (5.010E+05)*(3.348E-01) = 1.677E+05
-
-1unnormed tally density for tally 6          nonzero tally mean(m) = 7.863E+02   nps = 75                    print table 161
-
- abscissa              ordinate   log plot of tally probability density function in tally fluctuation chart bin(d=decade,slope= 0.0)
-  tally  number num den log den:d------------------------------d-------------------------------d-------------------------------d----
- 2.51+01      6 1.55-02  -1.810 *******************************|*******************************|*******************************|****
- 3.16+01      6 1.23-02  -1.910 *******************************|*******************************|*******************************|*   
- 3.98+01      5 8.14-03  -2.089 *******************************|*******************************|***************************    |    
- 5.01+01      4 5.17-03  -2.286 *******************************|*******************************|*********************          |    
- 6.31+01      9 9.25-03  -2.034 *******************************|*******************************|*****************************  |    
- 7.94+01      3 2.45-03  -2.611 *******************************|*******************************|**********                     |    
- 1.00+02      2 1.30-03  -2.887 *******************************|*******************************|*                              |    
- 1.26+02      0 0.00+00   0.000                                |                               |                               |    
- 1.58+02      2 8.18-04  -3.087 *******************************|***************************    |                               |    
- 2.00+02      1 3.25-04  -3.488 *******************************|**************                 |                               |    
- 2.51+02      1 2.58-04  -3.588 *******************************|***********                    |                               |    
- 3.16+02      0 0.00+00   0.000                                |                               |                               |    
- 3.98+02      0 0.00+00   0.000                                |                               |                               |    
- 5.01+02      0 0.00+00   0.000                                |                               |                               |    
- 6.31+02      1 1.03-04  -3.988 ****************************** |                               |                               |    
- 7.94+02      1 8.16-05  -4.088 mmmmmmmmmmmmmmmmmmmmmmmmmmm    |                               |                               |    
- 1.00+03      3 1.94-04  -3.711 *******************************|*******                        |                               |    
- 1.26+03      1 5.15-05  -4.288 ********************           |                               |                               |    
- 1.58+03      1 4.09-05  -4.388 *****************              |                               |                               |    
- 2.00+03      2 6.50-05  -4.187 ************************       |                               |                               |    
- 2.51+03      2 5.16-05  -4.287 ********************           |                               |                               |    
- 3.16+03      7 1.44-04  -3.843 *******************************|***                            |                               |    
- 3.98+03      2 3.26-05  -4.487 **************                 |                               |                               |    
- 5.01+03      1 1.29-05  -4.888 *                              |                               |                               |    
-  total      60 8.00-01         d------------------------------d-------------------------------d-------------------------------d----
+ there are no nonzero tallies in the tally fluctuation chart bin for tally        6
 
 1status of the statistical checks used to form confidence intervals for the mean for each tally bin
 
 
  tally   result of statistical checks for the tfc bin (the first check not passed is listed) and error magnitude check for all bins
 
-        6   missed  2 of 10 tfc bin checks: the relative error exceeds the recommended value of 0.1 for nonpoint detector tallies     
-         missed all bin error check:     1 tally bins had     0 bins with zeros and     1 bins with relative errors exceeding 0.10
+        6   no nonzero tallies were made in the tally fluctuation chart bin                           
+         no nonzero tallies were made in any one of the      1 tally bins
 
 
  the 10 statistical checks are only for the tally fluctuation chart bin and do not apply to other tally bins.
 
  warning.       1 of the     1 tally fluctuation chart bins did not pass all 10 statistical checks.
- warning.       1 of the     1 tallies had bins with relative errors greater than recommended.
+ warning.       1 of the     1 tallies were all zeros.
 1tally fluctuation charts                              
 
                             tally        6
           nps      mean     error   vov  slope    fom
-           75   4.1402E-01 0.1996 0.0472  0.0  167747
+            8   0.0000E+00 0.0000 0.0000  0.0 0.0E+00
 
  ***********************************************************************************************************************
 
- dump no.    2 on file vialRuntape     nps =          75     coll =            255     ctm =        0.00   nrn =        
-      4042
+ dump no.    2 on file vialRuntape     nps =           8     coll =              0     ctm =        0.00   nrn =        
+     24000
 
          6 warning messages so far.
 
 
- run terminated because  15 particles got lost.
+ run terminated because of bad trouble.
 
- computer time =    0.03 minutes
+ computer time =    0.06 minutes
 
- mcnp     version 6     02/20/18                     05/03/21 01:52:38                     probid =  05/03/21 01:52:37 
+ mcnp     version 6     02/20/18                     05/03/21 14:57:06                     probid =  05/03/21 14:57:05 
