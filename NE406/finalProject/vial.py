@@ -131,12 +131,12 @@ thicknessList:list     = []                    # List to store different wall th
 doseList:list          = []                    # List to store dose results
 #iteration contants
 minThick:float         = 0.01                  # [cm] Minimum wall thickness edge point
-maxThick:float         = 30.0                   # [cm] Maximim wall thickness edge point
+maxThick:float         = 30.0                  # [cm] Maximim wall thickness edge point
 iterMax:int            = 15                    # Max number of iterations
 convThickness:float    = None                  # Stores value of converged enrichment
 convDose:float         = None                  # Stores value of converged dose
 convDoseErr:float      = None                  # Stores error for converged dose
-targetDose:float       = 0.99                   # [rad/hr] target dose for sim
+targetDose:float       = 0.99                  # [rad/hr] target dose for sim
 doseEps:float          = 0.1                   # [cm] allowable error for thickness
 
 
@@ -244,7 +244,7 @@ def saveDoses(fileName:str = 'ConvergeDose.txt'):
         thick = str(thicknessList[i])
         dose  = str(doseList[i][0])
         doseE = str(doseList[i][1]*doseList[i][0])
-        out.write(thick+'\t\t'+dose+'\t\t'+doseE*dose+'\n')
+        out.write(thick+'\t\t'+dose+'\t\t'+doseE+'\n')
     out.close()
 
 # ------------------------------------------------------------------------
