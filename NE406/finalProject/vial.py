@@ -161,11 +161,9 @@ def convergeThickness(cleanUp:bool=False):
     vial1.path = conPath + '/vial1'
 
     if vial0.forceRecalc or not vial0.getValues():
-        vial0.cleanUp()
         vial0.runVial()
 
     if vial1.forceRecalc or not vial1.getValues():
-        vial1.cleanUp()
         vial1.runVial()
 
 
@@ -200,7 +198,7 @@ def convergeThickness(cleanUp:bool=False):
             break #Good enough!
         # Make new run
         myVial = vial(thicki)
-        myVial.path = conPath + '/vial' + str(i)
+        myVial.path = conPath + '/vial' + str(n_iter)
         if myVial.forceRecalc or not myVial.getValues():
             myVial.runVial()
 
