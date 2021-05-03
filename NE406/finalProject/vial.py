@@ -11,12 +11,16 @@ class vial(object):
     Class to create MCNP input for NE406 project
     '''
 
-    def __init__(self, wallThickness:float=0.5):
-        self.wallThickness:float    = wallThickness         # Wall thickness of vial
+    def __init__(self, vialThickness:float=0.5):
+        self.vialThickness:float    = vialThickness         # Wall thickness of vial
         self.path:str               = os.getcwd() + '/vial' # Path to run sim in
         self.inputName:str          = 'vialInput'           # MCNP input name
+        self.outputName:str         = 'vialOutput'          # MCNP output name
+        self.runtapeName:str        = 'vialRuntape'         # MCNP runtape name
         self.runName:str            = 'run.sh'              # Shell script name
         self.forceRecalc:bool       = False                 # Forces re-running of MCNP 
+        self.dose:float             = None                  # Calculated dose
+        self.doseE:float            = None                  # Calculated dose error
 
 
     def writeVial(self):
@@ -85,7 +89,7 @@ class vial(object):
         module load MCNP6/2.0
 
         cd $PBS_O_WORKDIR
-        mcnp6 TASKS 8 name={self.inputName}''')
+        mcnp6 TASKS 8 imp={self.inputName} outp={self.outputName} runtpe={self.runtapeName}''')
 
         try:
             os.chdir(self.path)
@@ -97,32 +101,51 @@ class vial(object):
         fh.close()
 
     def runVial(self):
+        self.writeVial()
+        self.writeRunScipt()
         os.chdir(self.path)
         os.system(f'chmod +x {self.runName} && qsub {self.runName}')
         os.chdir('/..')
 
     def getValues(self) -> bool:
-        '''add something to check if MNCP is done
-        and get the dose in the tissue'''
-        return None, None
+        is_done = False         #see if MCNP is done
+        while not is_done:
+            if os.path.exists(self.path+'/'+self.runtapeName):
+                is_done = True
+                continue
+            else:
+                time.sleep(0.1)
+        try:
+            results = open(self.path+'/'+self.outputName,'r')
+        except:
+            print('No output file')
+            return
+
+        for line in results:
+            if 'cell  1' in line:
+                self.dose, self.doseE = [float(val) for val in results.readline().split(' ') if val != '']
+        return True
 
     def cleanUp(self):
-        pass
+        shutil.rmtree(self.path)
 
+# ------------------------------------------------------------------------
+# 
+# Actually do calculation :D
+#
+# ------------------------------------------------------------------------
 
 cwd:str                = os.getcwd()           # Current working directory 
 thicknessList:list     = []                    # List to store different wall thicknesses tested
 doseList:list          = []                    # List to store dose results
 #iteration contants
 minThick:float         = 0.01                  # [cm] Minimum wall thickness edge point
-maxThick:float         = 1.0                   # [cm] Maximim wall thickness edge point
+maxThick:float         = 30.0                   # [cm] Maximim wall thickness edge point
 iterMax:int            = 15                    # Max number of iterations
 convThickness:float    = None                  # Stores value of converged enrichment
 convDose:float         = None                  # Stores value of converged dose
 convDoseErr:float      = None                  # Stores error for converged dose
 targetDose:float       = 1.0                   # [rad/hr] target dose for sim
-
-
 
 
 def convergeThickness(cleanUp:bool=False):
@@ -158,7 +181,6 @@ def convergeThickness(cleanUp:bool=False):
     dose0, dose0err = vial0.getValues()
     dose1, dose1err = vial1.getValues()
 
-
 def saveThicknessVals():
     pass
 
@@ -168,6 +190,4 @@ def saveThicknessVals():
 
 
 myVial = vial()
-myVial.writeVial()
-myVial.writeRunScipt()
 myVial.runVial()
