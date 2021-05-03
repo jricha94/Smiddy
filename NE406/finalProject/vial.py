@@ -157,8 +157,8 @@ def convergeThickness(cleanUp:bool=False):
     vial1 = vial(maxThick)
 
     # Set paths for each vial to run in
-    vial0.path = conPath + '/vial0'
-    vial1.path = conPath + '/vial1'
+    vial0.path = conPath + '/vialMin'
+    vial1.path = conPath + '/vialMax'
 
     if vial0.forceRecalc or not vial0.getValues():
         vial0.runVial()
