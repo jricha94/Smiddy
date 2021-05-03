@@ -241,9 +241,9 @@ def saveDoses(fileName:str = 'ConvergeDose.txt'):
     out = open(conPath + '/' + fileName, 'w')
     out.write('Thickness [cm]\t\tDose[rem?]\t\tDose Error\n')
     for i in range(len(thicknessList)):
-        thick = thicknessList[i]
-        dose  = doseList[i][0]
-        doseE = doseList[i][1]
+        thick = str(thicknessList[i])
+        dose  = str(doseList[i][0])
+        doseE = str(doseList[i][1])
         out.write(thick+'\t\t'+dose+'\t\t'+doseE*dose+'\n')
     out.close()
 
