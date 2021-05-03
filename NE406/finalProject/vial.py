@@ -108,7 +108,7 @@ class vial(object):
         os.chdir('/..')
 
     def getValues(self) -> bool:
-        if os.path.exists(self.path+'/'+self.runtapeName):
+        if os.path.exists(self.path+'/'+self.outputName):
             pass
         else:
             return False
@@ -227,16 +227,24 @@ def convergeThickness(cleanUp:bool=False):
     convDose          = dosei
     convDoseErr       = doseierr
     convergeThickness = thicki
+
+    print(convergeThickness, convDose, convDoseErr)
+
     if cleanUp:
         shutil.rmtree(conPath)
 
 def saveDoses(fileName:str = 'ConvergeDose.txt'):
     if not thicknessList:
         print('Nothing to save')
-    out = open(fileName, 'w')
-    out.write('Thickness\t\tDose\t\tdose Error\n')
+        return
+    conPath:str    = cwd + '/converge'
+    out = open(conPath + '/' + fileName, 'w')
+    out.write('Thickness [cm]\t\tDose[rem?]\t\tDose Error\n')
     for i in range(len(thicknessList)):
-        out.write(thicknessList[i]+'\t\t'+doseList[i][0]+'\t\t'+doseList[i][1]+'\n')
+        thick = thicknessList[i]
+        dose  = doseList[i][0]
+        doseE = doseList[i][1]
+        out.write(thick+'\t\t'+dose+'\t\t'+doseE*dose+'\n')
     out.close()
 
 # ------------------------------------------------------------------------
