@@ -89,7 +89,7 @@ class vial(object):
         module load MCNP6/2.0
 
         cd $PBS_O_WORKDIR
-        mcnp6 TASKS 8 imp={self.inputName} outp={self.outputName} runtpe={self.runtapeName}''')
+        mcnp6 TASKS 8 inp={self.inputName} outp={self.outputName} runtpe={self.runtapeName}''')
 
         try:
             os.chdir(self.path)
