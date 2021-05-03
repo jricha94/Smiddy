@@ -66,8 +66,8 @@ class vial(object):
         m2 6012 2 1001 4        $poly
         m3 55137 1              $Cs137
         mode p
-        nps 1e5
-        sdef pos=0.0 0.0 0.0 axs=0 1 0 cell=1 erg=0.661 par=p rad=0.5 ext=10
+        nps 1e6
+        sdef pos=0 0 0 axs=0 1 0 cell=1 erg=0.661 par=p rad=0 0.5 ext= 0 10
         f6:p 1
         fm6 5439.6
         *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
