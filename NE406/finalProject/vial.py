@@ -191,3 +191,5 @@ def saveThicknessVals():
 
 myVial = vial()
 myVial.runVial()
+myVial.getValues()
+print(myVial.dose, myVial.doseE)
