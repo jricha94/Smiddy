@@ -108,13 +108,10 @@ class vial(object):
         os.chdir('/..')
 
     def getValues(self) -> bool:
-        is_done = False         #see if MCNP is done
-        while not is_done:
-            if os.path.exists(self.path+'/'+self.runtapeName):
-                is_done = True
-                continue
-            else:
-                return False
+        if os.path.exists(self.path+'/'+self.runtapeName):
+            pass
+        else:
+            return False
 
         results = open(self.path+'/'+self.outputName,'r')
 
@@ -166,12 +163,13 @@ def convergeThickness(cleanUp:bool=False):
     if vial1.forceRecalc or not vial1.getValues():
         vial1.runVial()
 
-
-    if vial0.getValues() and vial1.getValues():
-        print(vial0.dose)
-        isDone = True
-    else:
-        time.sleep(10) # Wait for MCNP
+    isDone = False
+    while not isDone:
+        if vial0.getValues() and vial1.getValues():
+            print(vial0.dose)
+            isDone = True
+        else:
+            time.sleep(.1) # Wait for MCNP
 
     vial0.getValues()
     vial1.getValues()
