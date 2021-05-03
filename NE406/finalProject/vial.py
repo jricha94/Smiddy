@@ -114,24 +114,18 @@ class vial(object):
                 is_done = True
                 continue
             else:
-                time.sleep(0.1)
-        try:
-            results = open(self.path+'/'+self.outputName,'r')
-        except:
-            print('No output file')
-            return
+                return False
+
+        results = open(self.path+'/'+self.outputName,'r')
 
         for line in results:
             if 'cell  1' in line:
                 self.dose, self.doseE = [float(val) for val in results.readline().split(' ') if val != '']
         return True
 
-    def cleanUp(self):
-        shutil.rmtree(self.path)
-
 # ------------------------------------------------------------------------
 # 
-# Actually do calculation :D
+# Make functions to do calculations
 #
 # ------------------------------------------------------------------------
 
@@ -145,22 +139,26 @@ iterMax:int            = 15                    # Max number of iterations
 convThickness:float    = None                  # Stores value of converged enrichment
 convDose:float         = None                  # Stores value of converged dose
 convDoseErr:float      = None                  # Stores error for converged dose
-targetDose:float       = 1.0                   # [rad/hr] target dose for sim
+targetDose:float       = 0.99                   # [rad/hr] target dose for sim
+doseEps:float          = 0.1                   # [cm] allowable error for thickness
 
 
 def convergeThickness(cleanUp:bool=False):
     # Create and run edge points
+    conPath:str    = cwd + '/converge'
     dose0:float    = None
     dose0err:float = None
     dose1:float    = None
     dose1err:float = None
+    thick0:float   = None
+    thick1:float   = None
 
     vial0 = vial(minThick)
     vial1 = vial(maxThick)
 
     # Set paths for each vial to run in
-    vial0.path = cwd + '/vial0'
-    vial1.path = cwd + '/vial1'
+    vial0.path = conPath + '/vial0'
+    vial1.path = conPath + '/vial1'
 
     if vial0.forceRecalc or not vial0.getValues():
         vial0.cleanUp()
@@ -170,31 +168,85 @@ def convergeThickness(cleanUp:bool=False):
         vial1.cleanUp()
         vial1.runVial()
 
-    isDone = False      # Wait for MCNP
-    while not isDone:
-        if vial0.getValues() and vial1.getValues():
-            isDone = True
-        
-        else:
-            time.sleep(10)
 
-    dose0, dose0err = vial0.getValues()
-    dose1, dose1err = vial1.getValues()
+    if vial0.getValues() and vial1.getValues():
+        isDone = True
+    else:
+        time.sleep(10) # Wait for MCNP
 
-def saveThicknessVals():
-    pass
+    dose0, dose0err = vial0.dose, vial0.doseE
+    dose1, dose1err = vial1.dose, vial1.doseE
+    thick0 = minThick
+    thick1 = maxThick
+
+    thicknessList.append(thick0)
+    thicknessList.append(thick1)
+    doseList.append([dose0, dose0err])
+    doseList.append([dose1, dose1err])
+
+    n_iter:int     = 0
+    side:int       = 0
+    thicki:float   = None
+    dosei:float    = None
+    doseierr:float = None
+    while n_iter < iterMax:
+        n_iter += 1
+        d_dose = dose0 - dose1
+        if d_dose == 0.0:
+            print('ERROR: Divided by 0')
+            break
+        thicki = ((dose0-targetDose)*thick1 - (dose1-targetDose)*thick0)/d_dose
+        if abs(dose0-dose1) < doseEps and dose0 < 1.0 and dose1 < 1.0:
+            break #Good enough!
+        # Make new run
+        myVial = vial(thicki)
+        myVial.path = conPath + '/vial' + str(i)
+        if myVial.forceRecalc or not myVial.getValues():
+            myVial.runVial()
+
+        while not myVial.getValues():
+            time.sleep(5) # Wait for MCNP
+
+        dosei = myVial.dose
+        doseierr = myVial.doseE
+        thicknessList.append(thicki)
+        doseList.append([myVial.dose, myVial.doseE])
+        if (dosei-targetDose)*(dose1-targetDose) > 0.0: 
+            thick1 = thicki
+            dose1  = dosei
+            if side == -1:
+                dose0 = (dose0-targetDose)/2.0 + targetDose
+            side = -1
+        if (dose0-targetDose)*(dosei-targetDose) > 0.0:
+            thick0 = thicki
+            dose0  = dosei
+            if side == 1:
+                dose1 = (dose1-targetDose)/2.0 + targetDose
+            side = 1
+        if abs(dose0-dose1) < doseEps and dose0 < 1.0 and dose1 < 1.0:
+            break #Good enough!
+    convDose          = dosei
+    convDoseErr       = doseierr
+    convergeThickness = thicki
+    if cleanUp:
+        shutil.rmtree(conPath)
+
+def saveDoses(fileName:str = 'ConvergeDose.txt'):
+    if not thicknessList:
+        print('Nothing to save')
+    out = open(fileName, 'w')
+    out.write('Thickness\t\tDose\t\tdose Error\n')
+    for i in range(len(thicknessList)):
+        out.write(thicknessList[i]+'\t\t'+doseList[i][0]+'\t\t'+doseList[i][1]+'\n')
+    out.close()
+
+# ------------------------------------------------------------------------
+# 
+# Actually do calculations :D
+#
+# ------------------------------------------------------------------------
+
+convergeThickness()
+saveDoses()
 
 
-    
-
-
-
-myVial = vial(vialThickness=1.0)
-myVial.runVial()
-myVial.getValues()
-print(myVial.dose, myVial.doseE)
-vial2 = vial(vialThickness=20.0)
-vial2.path = cwd + '/vial2'
-vial2.runVial()
-vial2.getValues()
-print(vial2.dose, vial2.doseE)
