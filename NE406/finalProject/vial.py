@@ -67,10 +67,10 @@ class vial(object):
         m3 55137 1              $Cs137
         mode p
         nps 1e6
-        sdef pos=0 0 0 axs=0 1 0 cell=1 erg=0.661 par=p rad=d1 ext=d2
-        si1 0 1
+        sdef pos=0 5 0 axs=0 1 0 cell=1 erg=0.661 par=p rad=d1 ext=d2
+        si1 0 0.49
         sp1 0 1
-        si2 0.2 9.6
+        si2 -4.8 4.6
         sp2 0 1
         f6:p 1
         fm6 5439.6
