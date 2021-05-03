@@ -32,11 +32,11 @@ class vial(object):
         c Outer vial cylinder of tissue
         1       1       -1      2 -1           imp:p=1
         c
-        c 2 Inner wall of poly
-        2       2       -0.97   3 -2           imp:p=1
+        c 2 Inner wall of lucy
+        2       2       -1.18   3 -2           imp:p=1
         c
-        c Cs in vial
-        3       3       -1.873 -3              imp:p=1
+        c P in vial
+        3       3       -1.82 -3              imp:p=1
         c
         c VOID
         99      0       1                      imp:p=0
@@ -47,18 +47,18 @@ class vial(object):
         c 1 outer tissue cylinder
         1 rcc 0.0 0.0 0.0   0.0 0.0 10.0    {self.vialThickness + 1.49}
         c
-        c 2 outer poly
+        c 2 outer lucy
         2 rcc 0.0 0.0 0.0   0.0 0.0 10.0    {self.vialThickness + 0.49}
         c
-        c 3 outer Cs
+        c 3 outer P
         3 rcc 0.0 0.0 0.2   0.0 0.0 9.6     0.49
 
         c ---------------------------------
         c      Data cards
         c ---------------------------------
         m1 1001 2 8016 2        $Tissue
-        m2 6012 2 1001 4        $poly
-        m3 55137 1              $Cs137
+        m2 6012 0.599848 1001 0.08538 8016 0.319614 $Lucite
+        m3 15032 1              $P32
         mode p
         nps 1e6
         sdef pos=0 0 5 axs=0 0 1 cell=3 erg=0.661 par=p rad=d1 ext=d2
