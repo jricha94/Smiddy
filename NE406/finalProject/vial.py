@@ -49,10 +49,10 @@ class vial(object):
         c
         c *********************************
         c 1 outer vial cylinder
-        1 rcc 0.0 0.0 0.0   0.0 10.0 0.0    1.69
+        1 rcc 0.0 0.0 0.0   0.0 10.0 0.0    {self.vialThickness + 1.49}
         c
         c 2 poly
-        2 rcc 0.0 0.0 0.0   0.0 10.0 0.0    0.69
+        2 rcc 0.0 0.0 0.0   0.0 10.0 0.0    {self.vialThickness + 0.49}
         c
         c 3 Cs
         3 rcc 0.0 0.2 0.0   0.0 9.6 0.0     0.49
@@ -67,7 +67,7 @@ class vial(object):
         m3 55137 1              $Cs137
         mode p
         nps 1e5
-        sdef pos=0.0 0.1 0.0 erg=0.661 par=p
+        sdef cell=1 erg=0.661 par=p
         f6:p 1
         fm6 5439.6''')
         try:
@@ -189,7 +189,11 @@ def saveThicknessVals():
 
 
 
-myVial = vial()
+myVial = vial(vialThickness=1.0)
 myVial.runVial()
 myVial.getValues()
 print(myVial.dose, myVial.doseE)
+vial2 = vial(vialThickness=20.0)
+vial2.runVial()
+vial2.getValues()
+print(vial2.dose, vial2.doseE)
