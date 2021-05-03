@@ -1,0 +1,48 @@
+Title Card: NE406 final project
+c ---------------------------------
+c      Cell definitions
+c ---------------------------------
+c Outer vial cylinder of tissue
+1       1       -1      2 -1           imp:p=1
+c
+c 2 Inner wall of lucy
+2       2       -1.18   3 -2           imp:p=1
+c
+c P in vial
+3       3       -1.82 -3              imp:p=1
+c
+c VOID
+99      0       1                      imp:p=0
+
+c ---------------------------------
+c      Surface Definitions
+c ---------------------------------
+c 1 outer tissue cylinder
+1 rcc 0.0 0.0 0.0   0.0 0.0 10.0    18.270483438228556
+c
+c 2 outer lucy
+2 rcc 0.0 0.0 0.0   0.0 0.0 10.0    17.270483438228556
+c
+c 3 outer P
+3 rcc 0.0 0.0 0.2   0.0 0.0 9.6     0.49
+
+c ---------------------------------
+c      Data cards
+c ---------------------------------
+m1 1001 2 8016 2        $Tissue
+m2 6012 0.599848 1001 0.08538 8016 0.319614 $Lucite
+m3 15032 1              $P32
+mode p
+nps 1e6
+sdef pos=0 0 5 axs=0 0 1 cell=3 erg=0.661 par=p rad=d1 ext=d2
+si1 0 0.49
+sp1 0 1
+si2 -4.8 4.6
+sp2 0 1
+f6:p 1
+fm6 5439.6
+*fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
+           imesh = 15.0 iints = 1000
+           jmesh = 15.0 jints = 1
+           kmesh = 15.0 kints = 1000
+           out=ik
