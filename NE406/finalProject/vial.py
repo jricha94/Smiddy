@@ -67,9 +67,14 @@ class vial(object):
         m3 55137 1              $Cs137
         mode p
         nps 1e5
-        sdef cell=1 erg=0.661 par=p
+        sdef pos=0.0 0.0 0.0 axs=0 1 0 cell=1 erg=0.661 par=p rad=0.5 ext=10
         f6:p 1
-        fm6 5439.6''')
+        fm6 5439.6
+        *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
+            imesh = 15.0 iints = 1000
+            jmesh = 15.0 jints = 1000
+            kmesh = 15.0 kints = 1
+            out=ij''')
         try:
             os.chdir(self.path)
         except:
