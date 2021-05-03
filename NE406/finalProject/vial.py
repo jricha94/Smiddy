@@ -76,7 +76,7 @@ class vial(object):
         fm6 5439.6
         *fmesh14:p geom=rec origin= -10.0 -10.0 -10.0
                    imesh = 15.0 iints = 1000
-                   jmesh = 15.0 jints = 1000
+                   jmesh = 15.0 jints = 1
                    kmesh = 15.0 kints = 1000
                    out=ik''')
         try:
