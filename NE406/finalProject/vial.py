@@ -243,7 +243,7 @@ def saveDoses(fileName:str = 'ConvergeDose.txt'):
     for i in range(len(thicknessList)):
         thick = str(thicknessList[i])
         dose  = str(doseList[i][0])
-        doseE = str(doseList[i][1])
+        doseE = str(doseList[i][1]*doseList[i][0])
         out.write(thick+'\t\t'+dose+'\t\t'+doseE*dose+'\n')
     out.close()
 
