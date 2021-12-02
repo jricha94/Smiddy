@@ -1,0 +1,50 @@
+* ------------------------------------------------------*
+*         GENERIC BWR MODEL FOR EQUILIBRIUM CYCLE       *
+* ------------------------------------------------------*
+TIT * GENERIC BWR MODEL  -  REFLECTORS -
+SIM, 'REFLECTORS'
+FUE 1  10.3 / 0.71
+LFU 1
+    1  1
+    1  1  1
+    1  1  1  1
+    1  1  1  0  1
+    1  1  1  1  1  1
+    1  1  1  1  1  1  1
+    1  1  1  1  1  1  1  1
+************ INVARIANT DATA **************
+PDE 24.42                                         * Power density
+TFU 813.6                                         * Fuel temperature
+TMO 560.0                                         * Moderator temperature
+BWR 8 1.62 13.4 0.25 0.67 0.67 1.22
+SPA 6.0 / 750=14.0  302=86.0                      * Spacer
+******************************************
+PIN 1   0.52   0.53   0.615          * Fuel rod
+PIN 2   0.66   0.75  / 'MOD'  'BOX'  * Water rod
+LPI 1
+    1  1
+    1  1  1
+    1  1  1  1
+    1  1  1  2  1
+    1  1  1  1  1  1
+    1  1  1  1  1  1  1
+    1  1  1  1  1  1  1  1
+* Top Reflector
+*
+HO1 'COO'=0.58 'AIR'=0.30 'BOX'=0.10 'MOD' 0.02
+REF 15.24 / 'HO1' /// 'TOP'
+*
+* Bottom Reflector
+*
+* Material 1 volumes are 58% Steel 42% Moderator
+* Material 2 volumes are 17% Steel 83% Moderator
+HO1 'COO' 0.58 'CRS' 0.42
+HO2 'COO' 0.17 'CRS' 0.83
+REF 2.25 11.67 / 'HO1' 'HO2' /// 'BOT'
+*
+*Radial Reflector
+*
+REF 15.0 / 'MOD' /// 'RAD'
+*
+S3C
+END

@@ -1,0 +1,81 @@
+ Reserving general partition A  with:   14.0 Mwords (default)
+ Reserving neutron partition B1 with:    4.0 Mwords (default)
+ Reserving gamma   partition B2 with:    4.0 Mwords (default)
+ Total allocation                   :   18.0 Mwords (A+B1)
+ CASMO library identified as E6 0200 UPDATE D
+ __________________________________________________________________________________________
+ * C A S M O - 4E 1.00.02 REV:00 CREATED:2012/05/08 STUDSVIK * EXECUTED 2021/12/01 20:20:08
+
+ This source code includes the following optional modules:
+      1 - CASMO-4E (CASMO-4 Extended Version).
+      2 - MxN extended multi-assembly module present.
+      3 - Hexagonal module present.
+      4 - CLU/AGR module present.
+      5 - PSC Tiff/PostScript capability active.
+      6 - Azimuthal depletion model present.
+      7 - FSS/FSC model present.
+      8 - Extra cards present.
+      9 - Pn higher order scattering model present.
+     10 - DIA Rotated water hole model present.
+     11 - CCR Extended C.R. model present.
+
+       LIST OF USER FILES
+       ******************
+ EXECUTABLE FILE               /opt/studsvik/libexec/studsvik/casmo4e/casmo4e-u1.00.02/casmo4e.exe
+ NEUTRON DATA LIBRARY FILE     /opt/studsvik/lib/studsvik/casmo4e/e60200
+ GAMMA DATA LIBRARY FILE       /opt/studsvik/lib/studsvik/casmo4e/galb418
+ INPUT FILE                    bwr_ref.inp
+ OUTPUT LIST FILE              ./bwr_ref.out
+ CARD IMAGE FILE (SEG1)        ./bwr_ref.cax
+ 
+ [WARNING] IN CHKDUP              Duplicated input: ---Check input card:HO1
+ [WARNING] IN INP_MIX             ID=750 detected for SPA material but Zirc default [ 7.0000E-06] for thermal expansion coeff. (C) used.
+ [WARNING] IN INP_MIX             ID=750 detected for SPA material but Zirc default [ 6.550] for SPA density (D') used.
+ [WARNING] IN EDTFTD              Non-default neutron data library is attached.
+ [WARNING] IN INP_REF             Check card: *REF*. BWR TOP reflector 1st layer should use both COO and MOD.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+ [WARNING] IN INP_REF             Total reflector width of only: 13.920 cm. is too thin. SSP recommends >= 15.0 cm
+ [WARNING] IN INP_REF             Check card: *REF*. BWR BOT reflector 1st layer should use both COO and MOD.
+                                  -COO for coolant, and MOD inside water rods and water outside channel box.
+ 20:24:11 Executing statepoint No. 00021 ( 5.2 S.P./min )
+
+
+ RUN TERMINATED.  7  WARNING(S) ENCOUNTERED
+   0  FATAL ERROR(S),     7  WARNING(S)
+   0  USAGE NOTE(S),      0  CAUTION(S)
+
+
+                   Neutron Calculation                         
+ Memory Use        Allocated       Used                         
+ A Array            14000000   13999893
+ B Array             4000000     795263
+                    --------    -------
+ Total Words        18000000   14795156
+ Total Mwords           18.0       14.8
+ Total Mbytes           72.0       59.2
+
+ Run Started     (Date,Time):  2021/12/01   20:20:08  
+ Run Completed   (Date,Time):  2021/12/01   20:24:11  
+ Total Wall Time Used       :               00:04:03
+ Total CPU  Time Used       :               00:03:57   CPU Utilization:   97%
+ Files:
+ Input                      :  bwr_ref.inp
+ Output                     :  ./bwr_ref.out
+ Card Image                 :  ./bwr_ref.cax
+ *********************************
+ *  CASMO-4E NORMAL TERMINATION  *
+ *     -WARNINGS ENCOUNTERED-    *
+ *********************************
+C-4E Complete....
