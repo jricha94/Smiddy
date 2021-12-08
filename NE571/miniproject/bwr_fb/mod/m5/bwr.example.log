@@ -1,0 +1,108 @@
+ Reserving general partition A  with:   14.0 Mwords (default)
+ Reserving neutron partition B1 with:    4.0 Mwords (default)
+ Reserving gamma   partition B2 with:    4.0 Mwords (default)
+ Total allocation                   :   18.0 Mwords (A+B1)
+ CASMO library identified as E6 0200 UPDATE D
+ __________________________________________________________________________________________
+ * C A S M O - 4E 1.00.02 REV:00 CREATED:2012/05/08 STUDSVIK * EXECUTED 2021/12/03 18:36:09
+
+ This source code includes the following optional modules:
+      1 - CASMO-4E (CASMO-4 Extended Version).
+      2 - MxN extended multi-assembly module present.
+      3 - Hexagonal module present.
+      4 - CLU/AGR module present.
+      5 - PSC Tiff/PostScript capability active.
+      6 - Azimuthal depletion model present.
+      7 - FSS/FSC model present.
+      8 - Extra cards present.
+      9 - Pn higher order scattering model present.
+     10 - DIA Rotated water hole model present.
+     11 - CCR Extended C.R. model present.
+
+       LIST OF USER FILES
+       ******************
+ EXECUTABLE FILE               /opt/studsvik/libexec/studsvik/casmo4e/casmo4e-u1.00.02/casmo4e.exe
+ NEUTRON DATA LIBRARY FILE     /opt/studsvik/lib/studsvik/casmo4e/e60200
+ GAMMA DATA LIBRARY FILE       /opt/studsvik/lib/studsvik/casmo4e/galb418
+ INPUT FILE                    bwr.example.inp
+ OUTPUT LIST FILE              ./bwr.example.out
+ CARD IMAGE FILE (SEG1)        ./bwr.example.cax
+ 
+ [WARNING] IN SCANIN              Input card STA is missing before END card  -  STA card added.
+ [WARNING] IN INP_MIX             ID=750 detected for SPA material but Zirc default [ 7.0000E-06] for thermal expansion coeff. (C) used.
+ [WARNING] IN INP_MIX             ID=750 detected for SPA material but Zirc default [ 6.550] for SPA density (D') used.
+ [WARNING] IN EDTFTD              Non-default neutron data library is attached.
+
+   ** C A S M O - 4E SUMMARY **
+
+   GENERIC BWR MODEL  - FUEL BWRU296-4G3
+   HVOI=  0.0 HTFU=  813.6 HTMO=  555.0 HTCO=  555.0 HBOR=    0.0
+   NO VOID    TFU    TMO    TCO    BOR ROD   BURNUP   K-INF   K-INF     M2     PIN   U-235 FISS PU  TOT PU
+                                             MWD/KG             TWO-GROUP     PEAK    WT %    WT %    WT %
+    1  0.0  813.6  555.0  555.0    0.0        0.000 1.13997 1.13960  60.19   1.124   2.962   0.000   0.000  
+    2                                         0.100 1.10865 1.10846  59.75   1.123   2.950   0.002   0.002  
+    3                                         0.500 1.10664 1.10647  59.72   1.120   2.903   0.020   0.021  
+    4                                         1.000 1.11203 1.11184  59.80   1.114   2.846   0.043   0.044  
+    5                                         1.500 1.11986 1.11964  59.92   1.107   2.790   0.065   0.067  
+    6                                         2.000 1.12812 1.12787  60.05   1.100   2.735   0.085   0.089  
+    7                                         2.500 1.13688 1.13658  60.20   1.092   2.681   0.104   0.110  
+    8                                         3.000 1.14671 1.14636  60.36   1.084   2.627   0.122   0.130  
+    9                                         3.500 1.15767 1.15726  60.54   1.076   2.575   0.138   0.149  
+   10                                         4.000 1.16970 1.16921  60.74   1.067   2.524   0.154   0.167  
+   11                                         4.500 1.18228 1.18168  60.94   1.057   2.473   0.169   0.185  
+   12                                         5.000 1.19308 1.19238  61.12   1.049   2.424   0.183   0.202  
+   13                                         5.500 1.19964 1.19888  61.24   1.042   2.375   0.196   0.219  
+   14                                         6.000 1.20157 1.20079  61.30   1.037   2.327   0.208   0.234  
+   15                                         6.500 1.19955 1.19878  61.31   1.035   2.279   0.220   0.250  
+   16                                         7.000 1.19508 1.19434  61.28   1.033   2.232   0.232   0.265  
+   17                                         7.500 1.18945 1.18875  61.24   1.032   2.186   0.242   0.279  
+   18                                        10.000 1.15810 1.15761  61.00   1.028   1.965   0.290   0.347  
+   19                                        12.500 1.12714 1.12682  60.79   1.031   1.759   0.328   0.407  
+   20                                        15.000 1.09668 1.09649  60.59   1.036   1.568   0.359   0.460  
+   21                                        17.500 1.06661 1.06652  60.42   1.040   1.390   0.383   0.508  
+   22                                        20.000 1.03692 1.03689  60.26   1.045   1.225   0.402   0.550  
+   23                                        22.500 1.00762 1.00762  60.11   1.048   1.072   0.416   0.589  
+   24                                        25.000 0.97880 0.97880  59.96   1.050   0.932   0.426   0.623  
+   25                                        27.500 0.95059 0.95055  59.83   1.051   0.805   0.433   0.655  
+   26                                        30.000 0.92317 0.92306  59.70   1.050   0.689   0.437   0.683  
+   27                                        32.500 0.89678 0.89657  59.58   1.052   0.585   0.440   0.709  
+   28                                        35.000 0.87163 0.87132  59.47   1.052   0.493   0.441   0.733  
+   29                                        37.500 0.84796 0.84751  59.36   1.050   0.411   0.441   0.755  
+   30                                        40.000 0.82595 0.82536  59.26   1.046   0.340   0.439   0.775  
+   31                                        42.500 0.80575 0.80502  59.17   1.041   0.279   0.438   0.794  
+   32                                        45.000 0.78747 0.78659  59.09   1.036   0.228   0.436   0.812  
+   33                                        47.500 0.77114 0.77012  59.02   1.053   0.184   0.434   0.829  
+   34                                        50.000 0.75672 0.75557  58.95   1.069   0.148   0.432   0.845  
+   35                                        52.500 0.74415 0.74288  58.90   1.083   0.118   0.430   0.860  
+   36                                        55.000 0.73327 0.73189  58.85   1.096   0.094   0.428   0.875  
+   37                                        57.500 0.72392 0.72245  58.81   1.107   0.075   0.427   0.888  
+   38                                        60.000 0.71590 0.71436  58.77   1.116   0.059   0.425   0.901  
+
+
+ RUN TERMINATED.  4  WARNING(S) ENCOUNTERED
+   0  FATAL ERROR(S),     4  WARNING(S)
+   0  USAGE NOTE(S),      0  CAUTION(S)
+
+
+                   Neutron Calculation                         
+ Memory Use        Allocated       Used                         
+ A Array            14000000    4325734
+ B Array             4000000     216310
+                    --------    -------
+ Total Words        18000000    4542044
+ Total Mwords           18.0        4.5
+ Total Mbytes           72.0       18.2
+
+ Run Started     (Date,Time):  2021/12/03   18:36:09  
+ Run Completed   (Date,Time):  2021/12/03   18:37:11  
+ Total Wall Time Used       :               00:01:02
+ Total CPU  Time Used       :               00:00:56   CPU Utilization:   90%
+ Files:
+ Input                      :  bwr.example.inp
+ Output                     :  ./bwr.example.out
+ Card Image                 :  ./bwr.example.cax
+ *********************************
+ *  CASMO-4E NORMAL TERMINATION  *
+ *     -WARNINGS ENCOUNTERED-    *
+ *********************************
+C-4E Complete....
