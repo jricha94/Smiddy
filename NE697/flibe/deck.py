@@ -834,7 +834,7 @@ class serpDeck(object):
             28000.{self.lib} -0.12     % Natural Nickel
             42000.{self.lib} -0.025    % Natural Molybdenum
             ''')
-        material_cards += sus316_stainless_steelhttps://www.sandmeyersteel.com/images/316-316l-317l-spec-sheet.pdf
+        material_cards += sus316_stainless_steel
 
         # Boron Carbide
         B4C_natural = dedent(f'''
