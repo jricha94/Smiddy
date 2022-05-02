@@ -81,8 +81,7 @@ class serpDeck(object):
 
         # Make fuel salt
         self.e                  = enr                           # Fuel salt enrichment
-        self.salt_name          = fuel_salt                     # Fuel salt name
-        self.fuel_salt          = Salt(self.salt_formula, self.e) # Fuel salt object (see salts.py)
+        self.salt_name          = fuel_salt                     # Fuel salt name self.fuel_salt          = Salt(self.salt_formula, self.e) # Fuel salt object (see salts.py)
 
 
         self.e_ref              = enr_ref                       # Refuel salt enrichment
@@ -108,7 +107,7 @@ class serpDeck(object):
         x_rot = x * math.cos(math.radians(rotation)) - y * math.sin(math.radians(rotation))
         y_rot = x * math.sin(math.radians(rotation)) + y * math.cos(math.radians(rotation))
         return [x_rot, y_rot]
-    
+
     def _translate(self, point:list, pos:list):
         '''Moves a point to a new location'''
         x, y = point[0], point[1]

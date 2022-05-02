@@ -5,7 +5,6 @@ Module for writing and running NERTHUS reactor using the SERPENT Monte Carlo cod
 visit https://thorconpower.com/docs/exec_summary2.pdf to view TMSR-500 reactor concept
 NERTHUS is inspired by.
 '''
- #TODO: kill script if too hot or cold
 
 from salts import Salt
 from textwrap import dedent
@@ -26,7 +25,8 @@ GRAPHITE_RHO:float = 1.80                      # Graphite density at 950 K [g/cm
 SALTS = {
     'thorConSalt'   : '76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4',        #NaFBeTh12
     'thorCons_ref'  : '76%NaF + 12%BeF2 + 10.2%ThF4 + 1.8%UF4',       #NaFBeTh12
-    'flibe'         : '72%LiF + 16%BeF2 + 12%UF4'                     #flibe
+    'flibe'         : '72%LiF + 16%BeF2 + 12%UF4',                    #flibe
+    'nabe'          : '76%NaF + 12%BeF2 + 12%UF4'
 }
 
 
@@ -35,8 +35,8 @@ class serpDeck(object):
     class which writes NERTHUS core for SERPENT
     '''
 
-    def __init__(self, fuel_salt:str='thorConSalt', enr:float=0.17,
-                    refuel_salt:str='thorConSalt', enr_ref:float=0.20, refuel:bool=False) -> None:
+    def __init__(self, fuel_salt:str='flibe', enr:float=0.17,
+                    refuel_salt:str='flibe', enr_ref:float=0.20, refuel:bool=False) -> None:
 
 
         # Check is salt is defined
@@ -68,6 +68,8 @@ class serpDeck(object):
         self.feedback_index:int         = 0                     # index of burnstep to read material definitions from
         self.do_plots:bool              = False                 # Bool to plot core
         self.deck_path:str              = os.getcwd() + f'/{self.deck_name}' # Directory where SERPENT is ran
+        self.add_to_deck:str            = ""                    # Additional Serpent inputs you want to add to the deck
+        self.burn_steps:list            = [[2, 0.0208], [1, 0.9584], [1, 2], [1, 4], [22, 7], [44, 30]]
 
 
         # Control rods: 0=removed, 1=fully inserted
@@ -164,7 +166,10 @@ class serpDeck(object):
         '''method for writing the surfaces and cells for the NERTHUS model'''
 
         surfs_and_cells_cards:str = dedent('''
+            % ====================================== %
             % ===== NERTHUS Serpent input file ===== %
+            % ====================================== %
+
             set title "NERTHUS"
 
             % =================================== %
@@ -191,7 +196,6 @@ class serpDeck(object):
 
         pot_top = dedent(f'''
             % --- TOP WALL OF POT --- %
-
             % - wall of the top - %
             {pot_top_outer}
             {pot_top_outer_trans}
@@ -224,7 +228,6 @@ class serpDeck(object):
 
         pot_bot = dedent(f'''
             % --- BOTTOM WALL OF REACTOR --- %
-
             % - wall of the bottom - %
             {pot_bot_outer}
             {pot_bot_outer_trans}
@@ -247,7 +250,6 @@ class serpDeck(object):
 
         void = dedent('''
             % --- VOID CELLS --- %
-
             cell void_mid 0 outside
             pot_wall_outer -pot_wall_top pot_wall_bot
 
@@ -277,7 +279,6 @@ class serpDeck(object):
 
         shield = dedent(f'''
             % --- BORON CARBIDE SHIELD --- %
-
             % - shield surfaces - %
             surf shield_outer cyl 0.0 0.0 {shield_outer:.8f}
             surf shield_inner cyl 0.0 0.0 {shield_inner:.8f}
@@ -310,7 +311,6 @@ class serpDeck(object):
 
         plug = dedent(f'''
             % --- GRAPHITE PLUG REFLECTOR --- %
-            
             % - plug surfaces - %
             surf plug_out cyl 0.0 0.0 {plug_out:.8f}
             surf plug_top   pz  {plug_top:.8f}
@@ -362,7 +362,6 @@ class serpDeck(object):
 
         hat = dedent(f'''
             % --- GRAPHITE HAT REFLECTOR --- %
-
             % - hat surfaces - %
             surf hat_out cyl 0.0 0.0 {hat_out:.8f}
             surf hat_top pz {hat_top:.8f}
@@ -401,7 +400,6 @@ class serpDeck(object):
 
         salt_cell = dedent('''
             % --- FUEL SALT CELL --- %
-
             cell fuel_salt 0 fuelsalt
             (shield_top shield_inner -hat_bot -pot_wall_inner):             % Above shield
             (shield_outer -shield_top shield_bot -pot_wall_inner):          % Outside shield
@@ -419,8 +417,7 @@ class serpDeck(object):
         log_bot = self._GLE(-189)
 
         log = dedent(f'''
-            % --- Core definition
-
+            % --- CORE DEFINITION --- %
             % - top and bottom of logs
             surf log_top pz {log_top}
             surf log_bot pz {log_bot}
@@ -431,7 +428,6 @@ class serpDeck(object):
 
             slab = dedent(f'''
                 % --- {name.upper()} DEFINITION
-
                 % - SURFACES''')
 
             slab_points = {
@@ -502,7 +498,6 @@ class serpDeck(object):
 
             yoke = dedent(f'''
                 % --- {name.upper()} DEFINITION
-
                 % - SURFACES''')
             yoke_points = {
                 0 : [ 0.0 ,   0.0],
@@ -571,7 +566,6 @@ class serpDeck(object):
         # Make fuelsalt cell for log
         log += dedent('''
             % - LOG FUELSALT CELL
-
             cell log_salt 2 fuelsalt
             #(-guide_cyl log_top: -guide_cyl -log_bot)
             ''')
@@ -584,8 +578,7 @@ class serpDeck(object):
 
         # Make guide rods for log
         log += dedent(f'''
-            % --- GUIDE ROD AT TOP AND BOTTOM OF LOG
-
+            % --- GUIDE ROD AT TOP AND BOTTOM OF LOG --- %
             % - SURFACES
             surf guide_cyl cyl 0 0 {guide_rod_rad}
 
@@ -603,7 +596,6 @@ class serpDeck(object):
 
         ctrl_log = dedent(f'''
             % --- CONTROL LOG AND ROD DEFINITION
-
             % - SURFACES
             surf ctrl_hex hexxc 0 0 {ctrl_half_width:.8f}
             ''')
@@ -762,7 +754,6 @@ class serpDeck(object):
 
         lattice = dedent(f'''
             % --- SOLID GRAPHITE HEXAGON FOR OUTER REFLECTOR
-
             % - SURFACES
             surf ref_hex hexxc 0 0 {ref_hex_half_width:.8f}
 
@@ -910,14 +901,16 @@ class serpDeck(object):
             data_cards += dedent('''
                 % --- PLOTS
                 plot 1 5000 5000 0 -300 300 -300 300
-                plot 2 5000 5000 0 -300 300 -300 300
-                plot 3 5000 5000 0 -300 300 -300 300
+                %plot 2 5000 5000 0 -300 300 -300 300
+                %plot 3 5000 5000 0 -300 300 -300 300
 
                 ''')
 
         if self.refuel:
             data_cards += dedent(f'''
                 % --- REPROCESSING CARDS
+
+                set rfw 1 % write restart file
 
                 % - OFFGAS TANK
                 mat offgas -0.001 burn 1 vol 1e9 tmp {self.fs_mat_tempK}
@@ -955,22 +948,41 @@ class serpDeck(object):
                 dep
                 pro source_rep
                 daystep
-                0.0208 0.0208 0.9584 2 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-                30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30
-                30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30
-
-                set rfw 1
                 ''')
 
+            step_string = ""
+            size = 0
+
+            for (num, val) in self.burn_steps:
+                for _ in range(num):
+                    size += len(str(val)) + 1
+                    if size > 45:
+                        step_string += f"{val}\n"
+                        size = 0
+                    else:
+                        step_string += f"{val} "
+                    
+
+            data_cards += dedent(step_string)
         return data_cards
 
     def _get_deck(self) -> str:
         deck  = self._make_surfs_and_cells()
         deck += self._make_mat_cards()
         deck += self._make_data_cards()
+        if self.add_to_deck != None:
+            deck += dedent(self.add_to_deck)
         return deck
 
     def save_deck(self) -> None:
+        if self.fs_mat_tempK < 600:
+            print("Error: Fuel Salt temperature is below 600 (your core is frozen solid)\nPlease increase \"self.fs_mat_tempK\"")
+            quit()
+
+        if self.mod_tempK > 3000:
+            print("Error: Graphite temperature is above 3000K\n Please lower \"self.mod_tempK\"")
+            quit()
+
         try:
             os.makedirs(self.deck_path, exist_ok=True)
             with open(self.deck_path + '/' + self.deck_name, 'w') as outfile:
@@ -1093,8 +1105,16 @@ class serpDeck(object):
 
 
 if __name__ == '__main__':
-    test = serpDeck(fuel_salt='flibe', enr=0.2, refuel_salt='flibe', enr_ref=0.1, refuel=True)
+    test = serpDeck(fuel_salt='flibe', enr=0.2, refuel_salt='flibe', enr_ref=0.1, refuel=False)
     test.ngen = 80
     test.nskip = 20
-    test.histories = 1000
+    test.histories = 100
     test.queue = 'local'
+    test.ompcores = 16
+    some_string = """
+            %Hello, this is a test
+            %This is another test
+            """
+    test.add_to_deck = some_string
+    test.save_deck()
+

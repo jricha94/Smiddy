@@ -34,7 +34,7 @@ MOLARVOLUMES = { # Melt composition molar volumes at 600 and 800 degC
     'ZrF4': (47.0,  50.0),
     'ThF4': (46.6,  47.7),
     'UF4' : (45.5,  46.7),
-    'PuF3': (46.5,  47.4),      #not sure if this is dependent on type of Pu
+    'PuF3': (32.4,  32.4),      #not sure if this is dependent on type of Pu
     'WGPu': (46.5,  47.4),
     'TRU' : (46.5,  47.4)}      #Weapons grade Pu, Placeholder values to be replaced
 
@@ -94,7 +94,7 @@ class Salt(object):
 
         self.ELEMENTS['U'].isotopes[234].abundance = wf_u234
         self.ELEMENTS['U'].isotopes[235].abundance = self.enr
-        self.ELEMENTS['U'].isotopes[236]=molmass.Isotope(236.0455611, wf_u236, 236) # Add to dbase
+        self.ELEMENTS['U'].isotopes[236]= molmass.Isotope(236.0455611, wf_u236, 236) # Add to dbase
         self.ELEMENTS['U'].isotopes[238].abundance = wf_u238
 
         # Density calculation
@@ -131,35 +131,36 @@ class Salt(object):
                     self.newform += mfract + '%' + comp + '+'
                 self.formula = self.newform[0:-1]
         elif "TRU" in f:
-            self.ELEMENTS['Pu'].isotopes[238]=molmass.Isotope(238.0495599, 0.0347, 238)
-            self.ELEMENTS['Pu'].isotopes[239]=molmass.Isotope(239.0521634, 0.4602, 239)
-            self.ELEMENTS['Pu'].isotopes[240]=molmass.Isotope(240.0538135, 0.3505, 240)
-            self.ELEMENTS['Pu'].isotopes[241]=molmass.Isotope(241.0568515, 0.0638, 241)
-            self.ELEMENTS['Pu'].isotopes[242]=molmass.Isotope(252.0587426, 0.0907, 242)
-            self.ELEMENTS['Pu'].isotopes[244].abundance = 0.0 #remome Pu244
-            self.ELEMENTS['Am'].isotopes[241]=molmass.Isotope(241.0568291, 0.5625, 241)
-            self.ELEMENTS['Am'].isotopes[242]=molmass.Isotope(242.0595492, 0.0313, 242)
-            self.ELEMENTS['Am'].isotopes[243]=molmass.Isotope(243.0613811, 0.4062, 243)
-            self.ELEMENTS['Cm'].isotopes[243]=molmass.Isotope(243.0613891, 0.0714, 243)
-            self.ELEMENTS['Cm'].isotopes[244]=molmass.Isotope(244.0627526, 0.6429, 244)
-            self.ELEMENTS['Cm'].isotopes[245]=molmass.Isotope(245.0654912, 0.1786, 245)
-            self.ELEMENTS['Cm'].isotopes[246]=molmass.Isotope(246.0672237, 0.1071, 246)
-            self.ELEMENTS['Cm'].isotopes[247].abundance = 0.0 #Remove Cm247
-            MOLARVOLUMES['Np'] = (12.23, 13.23) #Placeholder
-            MOLARVOLUMES['Am'] = (20.25, 21.25) #Very rough estimate, probably wrong placeholder value
-            MOLARVOLUMES['Pu'] = (40.0, 41.0)
-            MOLARVOLUMES['Cm'] = (18.28, 19.28) #Placeholder
-            self.newform = ''
+            # Set Pu isotopes
+            self.ELEMENTS['Pu'].isotopes[238]=molmass.Isotope(238.0495599, 0.025144, 238)
+            self.ELEMENTS['Pu'].isotopes[239]=molmass.Isotope(239.0521634, 0.540571, 239)
+            self.ELEMENTS['Pu'].isotopes[240]=molmass.Isotope(240.0538135, 0.260571, 240)
+            self.ELEMENTS['Pu'].isotopes[241]=molmass.Isotope(241.0568515, 0.096000, 241)
+            self.ELEMENTS['Pu'].isotopes[242]=molmass.Isotope(242.0587426, 0.077714, 242)
+            self.ELEMENTS['Pu'].isotopes[244].abundance = 0.0 # Remove Pu-244
+            # Set Am Isotopes
+            self.ELEMENTS['Am'].isotopes[241]=molmass.Isotope(241.0568291, 0.777778, 241)
+            self.ELEMENTS['Am'].isotopes[243].abundance = 0.222222 # Set Am-242 abundance
+            # Set Cm Isotopes
+            self.ELEMENTS['Cm'].isotopes[244]=molmass.Isotope(244.062751, 1.0, 244)
+            self.ELEMENTS['Cm'].isotopes[247].abundance = 0.0
+            
+            self.newform = ""
+            self.oldform = self.formula
             for meltpart in self.formula.split('+'):
-                mfract, comp = meltpart.split('%')
-                if comp == 'TRU':
-                    self.newform += str(float(mfract)*0.015)+'%Np+'
-                    self.newform += str(float(mfract)*0.893)+'%Pu+'
-                    self.newform += str(float(mfract)*0.064)+'%Am+'
-                    self.newform += str(float(mfract)*0.028)+'%Cm+'
+                if "TRU" in meltpart:
+                    frac, _ = meltpart.split('%')
+                    frac = float(frac)
+                    tru_vec = f"{0.047*frac}%NpF4+{0.876*frac}%PuF3+{0.072*frac}%AmF3+{0.005*frac}%CmF3"
+                    self.newform += f"+{tru_vec}"
                 else:
-                    self.newform += mfract + '%' + comp + '+'
-                self.formula = self.newform[0:-1]
+                    self.newform += f"+{meltpart}"
+            
+            MOLARVOLUMES['NpF4'] = (46.0, 46.0)
+            MOLARVOLUMES['AmF3'] = (31.5, 31.5)
+            MOLARVOLUMES['CmF3'] = (22.5, 22.5)
+
+            self.formula = self.newform[1:]
 
         if my_debug:
             print(self)
