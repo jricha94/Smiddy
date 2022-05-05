@@ -307,6 +307,7 @@ class burn(object):
         while n_iter < self.refuel_iter:
             n_iter += 1
             d_k_diff = k_diff0 - k_diff1
+            print("0", k_diff0, "1", k_diff1, 'i', d_k_diff)
             if d_k_diff == 0.0:
                 print('ERROR: divide by 0')
                 return False

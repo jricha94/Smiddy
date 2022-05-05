@@ -26,8 +26,9 @@ SALTS = {
     'thorConSalt'   : '76%NaF + 12%BeF2 + 9.5%ThF4 + 2.5%UF4',        #NaFBeTh12
     'thorCons_ref'  : '76%NaF + 12%BeF2 + 10.2%ThF4 + 1.8%UF4',       #NaFBeTh12
     'flibe'         : '72%LiF + 16%BeF2 + 12%UF4',                    #flibe
-    'nabe'          : '76%NaF + 12%BeF2 + 12%UF4'
-}
+    'nabe'          : '76%NaF + 12%BeF2 + 12%UF4',
+    'flibe_tru'     : '72%LiF + 16%BeF2 + 10%UF4 + 2%TRU',                    #flibe
+    'nabe_tru'      : '76%NaF + 12%BeF2 + 10%UF4 + 2%TRU'}
 
 
 class serpDeck(object):
