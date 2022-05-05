@@ -1,0 +1,4 @@
+rate    k diff     k diff err for flibe refueled with flibe_tru
+1e-11	-0.21048000	0.00584192
+9e-09	-0.15551800	0.00578404
+3.492840180488333e-08	-0.10895100	0.00648827
