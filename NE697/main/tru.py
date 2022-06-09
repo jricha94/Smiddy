@@ -24,8 +24,8 @@ for r in refuel_list:
             f.histories = old_hist
             print("Calculating Refuel")
 
-    f.refuel_min = 1e-10
-    f.refuel_max = 8e-8
+    f.refuel_min = 5e-10
+    f.refuel_max = 1e-8
     f.refuel_path = cwd + f"/runs2/nabe_tru/refuel/{int(r*100)}enr"
     f.refuel_enr = r
     f.get_refuel_rate()
@@ -51,8 +51,8 @@ for r in refuel_list:
             f.histories = old_hist
             print("Calculating Refuel")
 
-    f.refuel_min = 1e-10
-    f.refuel_max = 8e-8
+    f.refuel_min = 5e-10
+    f.refuel_max = 1e-8
     f.refuel_path = cwd + f"/runs2/flibe_tru/refuel/{int(r*100)}enr"
     f.refuel_enr = r
     f.get_refuel_rate()
